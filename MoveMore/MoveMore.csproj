@@ -66,6 +66,7 @@
     <Compile Include="Moveable\MoveableBuilding.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UI.cs" />
+    <Compile Include="UI_Detours.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Icons\" />

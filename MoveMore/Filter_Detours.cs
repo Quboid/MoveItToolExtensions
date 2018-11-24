@@ -5,10 +5,7 @@ using ColossalFramework.IO;
 
 using System;
 using System.Collections.Generic;
-using System.IO;
-
 using Harmony;
-using ICities;
 using MoveIt;
 using UnityEngine;
 
@@ -245,11 +242,11 @@ namespace MoveMore
                 }
             }
 
+            Debug.Log($"ID=({id.Building},{id.Prop},{id.NetNode},{id.NetSegment},{id.Tree}");
             ___m_hoverInstance = id;
             return false;
         }
     }
-
 
 
     [HarmonyPatch(typeof(MoveItTool))]
