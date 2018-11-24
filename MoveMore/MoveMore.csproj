@@ -7,8 +7,8 @@
     <ProjectGuid>{38AB083C-2E6A-4709-A720-19109075FA44}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CSL_MoveMore</RootNamespace>
-    <AssemblyName>CSL_MoveMore</AssemblyName>
+    <RootNamespace>MoveMore</RootNamespace>
+    <AssemblyName>MoveMore</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
