@@ -45,7 +45,7 @@
     </Reference>
     <Reference Include="MoveIt, Version=1.0.6812.29872, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Users\Rob\AppData\Local\Colossal Order\Cities_Skylines\Addons\Mods\MoveIt\MoveIt.dll</HintPath>
+      <HintPath>C:\Users\Rob\AppData\Local\Colossal Order\Cities_Skylines\Addons\Mods\Move It 2.2.0 WS\MoveIt.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

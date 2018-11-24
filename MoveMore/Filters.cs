@@ -73,7 +73,6 @@ namespace MoveMore
             if (!MoveMore.filterNetworks) return true;
 
             NetworkFilter nf = NetworkFilter.GetFilter(info.GetAI().GetType());
-            if (nf.enabled) Debug.Log($"{info.name}");
             return nf.enabled;
         }
     }
@@ -131,7 +130,7 @@ namespace MoveMore
         {
             foreach (NetworkFilter nf in MoveMore.NetworkFilters.Values)
             {
-                Debug.Log($"ai:{ai}, count:{(nf.aiType == null ? 0 : nf.aiType.Count)}");
+                //Debug.Log($"ai:{ai}, count:{(nf.aiType == null ? 0 : nf.aiType.Count)}");
                 if (nf.aiType != null)
                 {
                     foreach (Type t in nf.aiType)

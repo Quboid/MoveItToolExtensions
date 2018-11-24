@@ -20,6 +20,7 @@ namespace MoveMore
         private static UIButton marquee;
         private static Traverse _panel = null;
 
+
         private static Traverse _getPanel()
         {
             if (_panel == null)
@@ -28,6 +29,7 @@ namespace MoveMore
             }
             return _panel;
         }
+
 
         public static void Postfix(UIToolOptionPanel __instance, UIButton ___m_marquee)
         {
@@ -188,6 +190,18 @@ namespace MoveMore
             checkBox.eventDoubleClick += OnDoubleClickNetwork;
 
             checkBox = SamsamTS.UIUtils.CreateCheckBox(filtersPanel);
+            checkBox.label.text = "Powerlines";
+            checkBox.name = "NF-Power";
+            checkBox.isChecked = true;
+            checkBox.isVisible = false;
+            UI.NetworkCheckboxes.Add(checkBox);
+            checkBox.eventCheckChanged += (c, p) =>
+            {
+                NetworkFilter.ToggleFilter("NF-Power");
+            };
+            checkBox.eventDoubleClick += OnDoubleClickNetwork;
+
+            checkBox = SamsamTS.UIUtils.CreateCheckBox(filtersPanel);
             checkBox.label.text = "Other";
             checkBox.name = "NF-Other";
             checkBox.isChecked = true;
@@ -204,7 +218,7 @@ namespace MoveMore
             filtersPanel.autoLayoutPadding = new RectOffset(0, 0, 0, 5);
             filtersPanel.autoLayout = true;
             filtersPanel.height = 210;
-            filtersPanel.absolutePosition = marquee.absolutePosition - new Vector3(57, filtersPanel.height + 5);
+            filtersPanel.absolutePosition = marquee.absolutePosition - new Vector3(0, filtersPanel.height + 5);
 
             marquee.eventDoubleClick += (UIComponent c, UIMouseEventParameter p) =>
             {
@@ -235,22 +249,6 @@ namespace MoveMore
             //MoveMore.DebugLine($"{filtersPanel.childCount},{filtersPanel.height} component-length:{component.Length}, label-length:{label.Length}");
         }
     }
-
-
-
-    [HarmonyPatch(typeof(MoveItTool))]
-    [HarmonyPatch("OnToolUpdate")]
-    class MIT_OnToolUpdate
-    {
-        public static void Postfix(MoveItTool __instance, Instance ___m_hoverInstance)
-        {
-            if (___m_hoverInstance == null) return;
-            if (___m_hoverInstance.id == null) return;
-
-            Debug.Log($"ID=(b:{___m_hoverInstance.id.Building},p:{___m_hoverInstance.id.Prop},n:{___m_hoverInstance.id.NetNode},s:{___m_hoverInstance.id.NetSegment},t:{___m_hoverInstance.id.Tree})");
-        }
-    }
-
 
 
     [HarmonyPatch(typeof(MoveItTool))]
@@ -334,58 +332,6 @@ namespace MoveMore
             }
 
             return true;
-
-            /*/ MoveIt code
-            MoveItTool.ToolState toolState = __instance.toolState;
-            DebugUtils.Log("OnLeftClick: " + toolState);
-
-            if (toolState == MoveItTool.ToolState.Default || __instance.toolState == MoveItTool.ToolState.DrawingSelection)
-            {
-                Event e = Event.current;
-                if (___m_hoverInstance == null) return false;
-
-                if (!(ActionQueue.instance.current is SelectAction action))
-                {
-                    Debug.Log($"Not using SelectAction, create");
-                    ActionQueue.instance.Push(new SelectAction(e.shift));
-                }
-                else
-                {
-                    ActionQueue.instance.Invalidate();
-                }
-
-                if (e.shift)
-                {
-                    if (MoveIt.Action.selection.Contains(___m_hoverInstance))
-                    {
-                        MoveIt.Action.selection.Remove(___m_hoverInstance);
-                    }
-                    else
-                    {
-                        MoveIt.Action.selection.Add(___m_hoverInstance);
-                    }
-                }
-                else
-                {
-                    MoveIt.Action.selection.Clear();
-                    MoveIt.Action.selection.Add(___m_hoverInstance);
-                }
-
-                toolState = MoveItTool.ToolState.Default;
-            }
-            else if (toolState == MoveItTool.ToolState.AligningHeights)
-            {
-                toolState = MoveItTool.ToolState.Default;
-
-                AlignHeightAction action = new AlignHeightAction();
-                action.height = ___m_hoverInstance.position.y;
-                ActionQueue.instance.Push(action);
-                ___m_nextAction = MoveMore.TOOL_ACTION_DO;
-
-                UIToolOptionPanel.RefreshAlignHeightButton();
-            }
-
-            return false;*/
         }
     }
 

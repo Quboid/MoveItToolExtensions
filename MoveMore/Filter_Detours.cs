@@ -24,7 +24,7 @@ namespace MoveMore
             Traverse _MIT = Traverse.Create(__instance);
 
             // MoveIt code
-            //___m_hoverInstance = null;
+            ___m_hoverInstance = null;
 
             Vector3 origin = mouseRay.origin;
             Vector3 normalized = mouseRay.direction.normalized;
@@ -245,19 +245,7 @@ namespace MoveMore
                 }
             }
 
-            if (id.Building > 0 || id.Prop > 0 || id.NetNode > 0 || id.NetSegment > 0 || id.Tree > 0)
-            {
-                ___m_hoverInstance = id;
-                //_MIT.Property("m_hoverInstance").Property("id").SetValue(id);
-                InstanceID dbg = _MIT.Property("m_hoverInstance").Property("id").GetValue<InstanceID>();
-                Debug.Log($"ID=(b:{dbg.Building},p:{dbg.Prop},n:{dbg.NetNode},s:{dbg.NetSegment},t:{dbg.Tree})");
-            }
-            else
-            {
-                ___m_hoverInstance = null;
-                //_MIT.Property("m_hoverInstance").Field("id").SetValue(null);
-                Debug.Log($"nope...");
-            }
+            ___m_hoverInstance = id;
             return false;
         }
     }

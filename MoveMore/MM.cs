@@ -15,7 +15,7 @@ namespace MoveMore
     public class MoveMore : LoadingExtensionBase, IUserMod
     {
         public string Name => "Move More!";
-        public string Description => "Extends Move It with extra filters and tools";
+        public string Description => "Extends Move It with extra tools and filters";
 
         public enum AlignMode { Off, Each, All, Random };
         public const MoveItTool.ToolState TOOL_KEY = (MoveItTool.ToolState)6;
@@ -26,11 +26,12 @@ namespace MoveMore
         public static bool filterSurfaces = true;
         public static bool filterNetworks = false;
         public static Dictionary<string, NetworkFilter> NetworkFilters = new Dictionary<string, NetworkFilter>
-        {
+        {   
             { "NF-Roads", new NetworkFilter(true, new List<Type> { typeof(RoadBaseAI) } ) },
             { "NF-Tracks", new NetworkFilter(true, new List<Type> { typeof(TrainTrackBaseAI) } ) },
             { "NF-Paths", new NetworkFilter(true, new List<Type> { typeof(PedestrianPathAI), typeof(PedestrianTunnelAI), typeof(PedestrianBridgeAI), typeof(PedestrianWayAI) } ) },
             { "NF-Fences", new NetworkFilter(true, new List<Type> { typeof(DecorationWallAI) } ) },
+            { "NF-Power", new NetworkFilter(true, new List<Type> { typeof(PowerLineAI) } ) },
             { "NF-Other", new NetworkFilter(true,  null ) }
         };
 

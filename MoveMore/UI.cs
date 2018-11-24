@@ -75,6 +75,7 @@ namespace MoveMore
         public static void ToggleNetworks()
         {
             MoveMore.filterNetworks = !MoveMore.filterNetworks;
+            int filterRows = MoveMore.NetworkFilters.Count;
 
             if (MoveMore.filterNetworks)
             {
@@ -90,8 +91,8 @@ namespace MoveMore
                     }
                 }
 
-                FilterPanel.height += MoveMore.UI_FILTER_CB_HEIGHT * 5;
-                FilterPanel.absolutePosition += new Vector3(0f, 0 - (MoveMore.UI_FILTER_CB_HEIGHT * 5), 0);
+                FilterPanel.height += MoveMore.UI_FILTER_CB_HEIGHT * filterRows;
+                FilterPanel.absolutePosition += new Vector3(0f, 0 - (MoveMore.UI_FILTER_CB_HEIGHT * filterRows), 0);
                 _updateToggleNF();
             }
             else
@@ -108,8 +109,8 @@ namespace MoveMore
                     }
                 }
 
-                FilterPanel.height -= MoveMore.UI_FILTER_CB_HEIGHT * 5;
-                FilterPanel.absolutePosition -= new Vector3(0f, 0 - (MoveMore.UI_FILTER_CB_HEIGHT * 5), 0);
+                FilterPanel.height -= MoveMore.UI_FILTER_CB_HEIGHT * filterRows;
+                FilterPanel.absolutePosition -= new Vector3(0f, 0 - (MoveMore.UI_FILTER_CB_HEIGHT * filterRows), 0);
                 _updateToggleNF();
             }
 
