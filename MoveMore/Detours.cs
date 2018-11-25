@@ -34,11 +34,8 @@ namespace MoveMore
     {
         public static bool Prefix(MoveItTool __instance, ref Instance ___m_hoverInstance, ref int ___m_nextAction)
         {
-            if (__instance == null)
-            {
-                //Debug.Log("Null instance!");
+            if (___m_hoverInstance == null)
                 return true;
-            }
 
             if (MoveMore.AlignMode != MoveMore.AlignModes.Off)
             {

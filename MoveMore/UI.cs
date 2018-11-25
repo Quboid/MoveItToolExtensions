@@ -10,22 +10,34 @@ namespace MoveMore
     {
         public static List<UICheckBox> NetworkCheckboxes = new List<UICheckBox>();
         public static UIButton ToggleNF;
-        public static UIPanel FilterPanel;
+        public static UIPanel FilterPanel, AlignToolsPanel;
+        public static Dictionary<string, UIButton> AlignButtons = new Dictionary<string, UIButton>();
         public static Color32 TextColor = new Color32(175, 216, 235, 255);
 
 
-        public static UITextureAtlas GetIconsAtlas()
+        public static UITextureAtlas GetIconsAtlas(UIPanel panel)
         {
+            Texture2D[] textures =
+            {
+                panel.atlas["OptionBase"].texture,
+                panel.atlas["OptionBaseHovered"].texture,
+                panel.atlas["OptionBasePressed"].texture,
+                panel.atlas["OptionBaseDisabled"].texture,
+                panel.atlas["OptionBaseFocused"].texture
+            };
+
             string[] spriteNames = new string[]
             {
                 "AlignTools",
-                "AlignRotation",
-                "AlignRandom"
+                "AlignEach",
+                "AlignAll",
+                "AlignRandom",
+                "ColumnBG"
             };
 
-            Traverse _ResourceLoader = Traverse.Create("ResourceLoader");
-            UITextureAtlas loadedAtlas = _ResourceLoader.Method("CreateTextureAtlas", "MoveMore_Icons", spriteNames, "MoveMore.Icons.").GetValue<UITextureAtlas>();
-            
+            UITextureAtlas loadedAtlas = ResourceLoader.CreateTextureAtlas("MoveMore", spriteNames, "MoveMore.Icons.");
+            ResourceLoader.AddTexturesInAtlas(loadedAtlas, textures);
+
             return loadedAtlas;
         }
 

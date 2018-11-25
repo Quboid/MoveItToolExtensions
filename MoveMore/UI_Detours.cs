@@ -39,22 +39,10 @@ namespace MoveMore
     {
         private static UIButton m_marquee;
         private static UIButton m_alignTools;
-        private static Traverse _panel = null;
-
-
-        private static Traverse _getPanel()
-        {
-            if (_panel == null)
-            {
-                _panel = Traverse.Create(m_marquee);
-            }
-            return _panel;
-        }
-
 
         public static void Postfix(UIToolOptionPanel __instance, ref UIButton ___m_marquee, ref UIButton ___m_alignHeight)
         {
-            UIPanel filtersPanel;
+            UIPanel filtersPanel, alignToolsPanel;
             m_marquee = ___m_marquee;
             m_alignTools = ___m_alignHeight;
             __instance.RemoveUIComponent(__instance.filtersPanel);
@@ -242,6 +230,7 @@ namespace MoveMore
             filtersPanel.height = 210;
             filtersPanel.absolutePosition = m_marquee.absolutePosition - new Vector3(0, filtersPanel.height + 5);
 
+
             m_marquee.eventDoubleClick += (UIComponent c, UIMouseEventParameter p) =>
             {
                 int u = 0;
@@ -268,12 +257,82 @@ namespace MoveMore
 
 
             m_alignTools.tooltip = "Alignment Tools";
-            m_alignTools.atlas = UI.GetIconsAtlas();
+            m_alignTools.atlas = UI.GetIconsAtlas(__instance);
             m_alignTools.normalFgSprite = "AlignTools";
 
-            //Component[] component = filtersPanel.GetComponentsInChildren(typeof(UICheckBox));
-            //Component[] label = filtersPanel.GetComponentsInChildren(typeof(UILabel));
-            //MoveMore.DebugLine($"{filtersPanel.childCount},{filtersPanel.height} component-length:{component.Length}, label-length:{label.Length}");
+            alignToolsPanel = __instance.AddUIComponent<UIPanel>();
+            UI.AlignToolsPanel = alignToolsPanel;
+            alignToolsPanel.clipChildren = true;
+            alignToolsPanel.autoLayout = false;
+            alignToolsPanel.size = new Vector2(36, 160);
+            alignToolsPanel.isVisible = true;
+            alignToolsPanel.absolutePosition = m_alignTools.absolutePosition + new Vector3(5, 10 - alignToolsPanel.height);
+            alignToolsPanel.zOrder = __instance.zOrder + 1;
+
+            UIPanel atpBackground = alignToolsPanel.AddUIComponent<UIPanel>();
+            atpBackground.atlas = UI.GetIconsAtlas(__instance);
+            atpBackground.backgroundSprite = "ColumnBG";
+            atpBackground.relativePosition = new Vector3(5, 5);
+            atpBackground.width = atpBackground.parent.width - 10;
+            atpBackground.opacity = 0.8f;
+
+            UIPanel atpContainer = alignToolsPanel.AddUIComponent<UIPanel>();
+            atpContainer.autoLayoutDirection = LayoutDirection.Vertical;
+            atpContainer.autoLayoutPadding = new RectOffset(0, 0, 0, 5);
+            atpContainer.autoLayout = true;
+            atpContainer.relativePosition = Vector3.zero;
+
+            UI.AlignButtons.Add("AlignRandom", atpContainer.AddUIComponent<UIButton>());
+            UIButton alignRandom = UI.AlignButtons.GetValueSafe("AlignRandom");
+            alignRandom.name = "AlignRandom";
+            alignRandom.atlas = UI.GetIconsAtlas(alignToolsPanel);
+            alignRandom.tooltip = "Immediate rotate valid items randomly";
+            alignRandom.playAudioEvents = true;
+            alignRandom.size = new Vector2(36, 36);
+            alignRandom.normalBgSprite = "OptionBase";
+            alignRandom.hoveredBgSprite = "OptionBaseHovered";
+            alignRandom.pressedBgSprite = "OptionBasePressed";
+            alignRandom.disabledBgSprite = "OptionBaseDisabled";
+            alignRandom.normalFgSprite = "AlignRandom";
+
+            UI.AlignButtons.Add("AlignAll", atpContainer.AddUIComponent<UIButton>());
+            UIButton alignAll = UI.AlignButtons.GetValueSafe("AlignAll");
+            alignAll.name = "AlignAll";
+            alignAll.atlas = UI.GetIconsAtlas(alignToolsPanel);
+            alignAll.tooltip = "Align rotation all around single point";
+            alignAll.playAudioEvents = true;
+            alignAll.size = new Vector2(36, 36);
+            alignAll.normalBgSprite = "OptionBase";
+            alignAll.hoveredBgSprite = "OptionBaseHovered";
+            alignAll.pressedBgSprite = "OptionBasePressed";
+            alignAll.disabledBgSprite = "OptionBaseDisabled";
+            alignAll.normalFgSprite = "AlignAll";
+
+            UI.AlignButtons.Add("AlignEach", atpContainer.AddUIComponent<UIButton>());
+            UIButton alignEach = UI.AlignButtons.GetValueSafe("AlignEach");
+            alignEach.name = "AlignEach";
+            alignEach.atlas = UI.GetIconsAtlas(alignToolsPanel);
+            alignEach.tooltip = "Align rotation individually";
+            alignEach.playAudioEvents = true;
+            alignEach.size = new Vector2(36, 36);
+            alignEach.normalBgSprite = "OptionBase";
+            alignEach.hoveredBgSprite = "OptionBaseHovered";
+            alignEach.pressedBgSprite = "OptionBasePressed";
+            alignEach.disabledBgSprite = "OptionBaseDisabled";
+            alignEach.normalFgSprite = "AlignEach";
+
+            UI.AlignButtons.Add("AlignHeight", atpContainer.AddUIComponent<UIButton>());
+            UIButton alignHeight = UI.AlignButtons.GetValueSafe("AlignHeight");
+            alignHeight.name = "AlignHeight";
+            alignHeight.atlas = UI.GetIconsAtlas(alignToolsPanel);
+            alignHeight.tooltip = "Align height";
+            alignHeight.playAudioEvents = true;
+            alignHeight.size = new Vector2(36, 36);
+            alignHeight.normalBgSprite = "OptionBase";
+            alignHeight.hoveredBgSprite = "OptionBaseHovered";
+            alignHeight.pressedBgSprite = "OptionBasePressed";
+            alignHeight.disabledBgSprite = "OptionBaseDisabled";
+            alignHeight.normalFgSprite = "AlignHeight";
         }
     }
 }

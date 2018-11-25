@@ -17,12 +17,10 @@ namespace MoveMore
         public string Name => "Move More!";
         public string Description => "Extends Move It with extra tools and filters";
 
-        public enum AlignModes { Off, Each, All, Random };
         public const MoveItTool.ToolState TOOL_KEY = (MoveItTool.ToolState)6;
         public const int TOOL_ACTION_DO = 1;
         public const int UI_FILTER_CB_HEIGHT = 25;
 
-        public static AlignModes AlignMode = AlignModes.Off;
         public static bool filterSurfaces = true;
         public static bool filterNetworks = false;
         public static Dictionary<string, NetworkFilter> NetworkFilters = new Dictionary<string, NetworkFilter>
@@ -34,6 +32,9 @@ namespace MoveMore
             { "NF-Power", new NetworkFilter(true, new List<Type> { typeof(PowerLineAI) } ) },
             { "NF-Other", new NetworkFilter(true,  null ) }
         };
+
+        public enum AlignModes { Off, Each, All, Random };
+        public static AlignModes AlignMode = AlignModes.Off;
 
         private static bool debugInitialised = false;
         public static readonly string debugPath = Path.Combine(DataLocation.localApplicationData, "MoveMore.log");

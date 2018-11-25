@@ -65,11 +65,20 @@
     <Compile Include="Detours.cs" />
     <Compile Include="Moveable\MoveableBuilding.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ResourceLoader.cs" />
     <Compile Include="UI.cs" />
     <Compile Include="UI_Detours.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Icons\" />
+    <EmbeddedResource Include="Icons\ColumnBG.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Icons\AlignRandom.png" />
+    <EmbeddedResource Include="Icons\AlignEach.png" />
+    <EmbeddedResource Include="Icons\AlignTools.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Icons\AlignAll.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
