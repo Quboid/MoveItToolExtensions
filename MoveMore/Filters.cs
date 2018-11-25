@@ -70,6 +70,7 @@ namespace MoveMore
         private static bool _networkFilter(NetInfo info)
         {
             //Debug.Log($"{info.name}");
+            if (!MoveItTool.marqueeSelection) return true;
             if (!MoveMore.filterNetworks) return true;
 
             NetworkFilter nf = NetworkFilter.GetFilter(info.GetAI().GetType());

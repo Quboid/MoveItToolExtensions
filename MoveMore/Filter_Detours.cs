@@ -242,7 +242,7 @@ namespace MoveMore
                 }
             }
 
-            Debug.Log($"ID=({id.Building},{id.Prop},{id.NetNode},{id.NetSegment},{id.Tree}");
+            //Debug.Log($"ID=({id.Building},{id.Prop},{id.NetNode},{id.NetSegment},{id.Tree})");
             ___m_hoverInstance = id;
             return false;
         }

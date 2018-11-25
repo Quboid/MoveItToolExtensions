@@ -153,7 +153,7 @@ namespace MoveMore
                 }
             }
 
-            MoveMore.mode = MoveMore.AlignMode.Off;
+            MoveMore.AlignMode = MoveMore.AlignModes.Off;
             UpdateArea(bounds);
             UpdateArea(GetTotalBounds(false));
         }

@@ -18,10 +18,10 @@ namespace MoveMore
     {
         public static void Prefix(MoveItTool __instance)
         {
-            if (__instance.toolState == MoveItTool.ToolState.AligningHeights && MoveMore.mode != MoveMore.AlignMode.Off)
+            if (__instance.toolState == MoveItTool.ToolState.AligningHeights && MoveMore.AlignMode != MoveMore.AlignModes.Off)
             {
                 // User switched tool
-                MoveMore.mode = MoveMore.AlignMode.Off;
+                MoveMore.AlignMode = MoveMore.AlignModes.Off;
             }
         }
     }
@@ -40,7 +40,7 @@ namespace MoveMore
                 return true;
             }
 
-            if (MoveMore.mode != MoveMore.AlignMode.Off)
+            if (MoveMore.AlignMode != MoveMore.AlignModes.Off)
             {
                 float angle;
 
@@ -68,14 +68,14 @@ namespace MoveMore
                 else
                 {
                     //Debug.Log($"Wrong hover asset type <{___m_hoverInstance.GetType()}>");
-                    return MoveMore.Deactivate();
+                    return MoveMore.DeactivateAR();
                 }
 
                 // Add action to queue, also enables Undo/Redo
                 AlignRotationAction action;
-                switch (MoveMore.mode)
+                switch (MoveMore.AlignMode)
                 {
-                    case MoveMore.AlignMode.All:
+                    case MoveMore.AlignModes.All:
                         action = new AlignGroupRotationAction();
                         break;
 
@@ -89,7 +89,7 @@ namespace MoveMore
                 ___m_nextAction = MoveMore.TOOL_ACTION_DO;
 
                 //Debug.Log($"Angle:{angle}, from {___m_hoverInstance}");
-                return MoveMore.Deactivate(false);
+                return MoveMore.DeactivateAR(false);
             }
 
             return true;

@@ -1,4 +1,5 @@
 ﻿using ColossalFramework.UI;
+using Harmony;
 using MoveIt;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,6 +12,22 @@ namespace MoveMore
         public static UIButton ToggleNF;
         public static UIPanel FilterPanel;
         public static Color32 TextColor = new Color32(175, 216, 235, 255);
+
+
+        public static UITextureAtlas GetIconsAtlas()
+        {
+            string[] spriteNames = new string[]
+            {
+                "AlignTools",
+                "AlignRotation",
+                "AlignRandom"
+            };
+
+            Traverse _ResourceLoader = Traverse.Create("ResourceLoader");
+            UITextureAtlas loadedAtlas = _ResourceLoader.Method("CreateTextureAtlas", "MoveMore_Icons", spriteNames, "MoveMore.Icons.").GetValue<UITextureAtlas>();
+            
+            return loadedAtlas;
+        }
 
 
         public static UIButton CreateToggleNF()

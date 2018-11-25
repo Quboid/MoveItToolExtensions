@@ -17,12 +17,12 @@ namespace MoveMore
         public string Name => "Move More!";
         public string Description => "Extends Move It with extra tools and filters";
 
-        public enum AlignMode { Off, Each, All, Random };
+        public enum AlignModes { Off, Each, All, Random };
         public const MoveItTool.ToolState TOOL_KEY = (MoveItTool.ToolState)6;
         public const int TOOL_ACTION_DO = 1;
         public const int UI_FILTER_CB_HEIGHT = 25;
 
-        public static AlignMode mode = AlignMode.Off;
+        public static AlignModes AlignMode = AlignModes.Off;
         public static bool filterSurfaces = true;
         public static bool filterNetworks = false;
         public static Dictionary<string, NetworkFilter> NetworkFilters = new Dictionary<string, NetworkFilter>
@@ -67,11 +67,11 @@ namespace MoveMore
         }
 
 
-        public static bool Deactivate(bool switchMode = true)
+        public static bool DeactivateAR(bool switchMode = true)
         {
             if (switchMode)
             {
-                mode = AlignMode.Off;
+                AlignMode = AlignModes.Off;
             }
             MoveItTool tool = (MoveItTool)ColossalFramework.Singleton<ToolController>.instance.CurrentTool;
             tool.toolState = MoveItTool.ToolState.Default;
@@ -111,9 +111,9 @@ namespace MoveMore
                     _processed = true;
 
                     // Action
-                    if (MoveMore.mode != MoveMore.AlignMode.Off)
+                    if (MoveMore.AlignMode != MoveMore.AlignModes.Off)
                     { // Switch Off
-                        MoveMore.Deactivate();
+                        MoveMore.DeactivateAR();
                     }
                     else
                     {
@@ -123,28 +123,28 @@ namespace MoveMore
                         }
                         else if (MoveIt.Action.selection.Count > 0)
                         {
-                            if (tool.toolState != MoveItTool.ToolState.AligningHeights)
-                            {
-                                tool.StartAligningHeights();
-                            }
                             if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))
                             {
-                                MoveMore.mode = MoveMore.AlignMode.All;
+                                MoveMore.AlignMode = MoveMore.AlignModes.All;
                             }
                             else if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
                             {
-                                MoveMore.mode = MoveMore.AlignMode.Random;
+                                MoveMore.AlignMode = MoveMore.AlignModes.Random;
 
                                 // Perform action immediately
                                 AlignRotationAction action = new AlignRandomRotationAction();
                                 action.followTerrain = MoveItTool.followTerrain;
                                 ActionQueue.instance.Push(action);
                                 ActionQueue.instance.Do();
-                                MoveMore.Deactivate();
+                                MoveMore.DeactivateAR();
                             }
                             else
                             {
-                                MoveMore.mode = MoveMore.AlignMode.Each;
+                                MoveMore.AlignMode = MoveMore.AlignModes.Each;
+                            }
+                            if (tool.toolState != MoveItTool.ToolState.AligningHeights)
+                            {
+                                tool.StartAligningHeights();
                             }
                         }
                     }

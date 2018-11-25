@@ -6,11 +6,39 @@ using UnityEngine;
 namespace MoveMore
 {
     [HarmonyPatch(typeof(UIToolOptionPanel))]
+    [HarmonyPatch("RefreshAlignHeightButton")]
+    class UITOP_RefreshAlignHeightButton
+    {
+        private static UIButton m_alignTools;
+
+        public static bool Prefix()
+        {
+            UIToolOptionPanel instance = UIToolOptionPanel.instance;
+            m_alignTools = Traverse.Create(instance).Field("m_alignHeight").GetValue<UIButton>();
+
+            if (UIToolOptionPanel.instance != null && m_alignTools != null && MoveItTool.instance != null)
+            {
+                if (MoveItTool.instance.toolState == MoveItTool.ToolState.AligningHeights)
+                {
+                    m_alignTools.normalBgSprite = "OptionBaseFocused";
+                }
+                else
+                {
+                    m_alignTools.normalBgSprite = "OptionBase";
+                }
+            }
+
+            return false;
+        }
+    }
+
+
+    [HarmonyPatch(typeof(UIToolOptionPanel))]
     [HarmonyPatch("Start")]
     class UITOP_Start
     {
         private static UIButton m_marquee;
-        private static UIButton m_alignHeight;
+        private static UIButton m_alignTools;
         private static Traverse _panel = null;
 
 
@@ -28,10 +56,8 @@ namespace MoveMore
         {
             UIPanel filtersPanel;
             m_marquee = ___m_marquee;
-            m_alignHeight = ___m_alignHeight;
+            m_alignTools = ___m_alignHeight;
             __instance.RemoveUIComponent(__instance.filtersPanel);
-
-            Debug.Log($"");
 
             filtersPanel = __instance.filtersPanel = __instance.AddUIComponent(typeof(UIPanel)) as UIPanel;
             filtersPanel.atlas = SamsamTS.UIUtils.GetAtlas("Ingame");
@@ -240,8 +266,13 @@ namespace MoveMore
                 }
             };
 
-            Component[] component = filtersPanel.GetComponentsInChildren(typeof(UICheckBox));
-            Component[] label = filtersPanel.GetComponentsInChildren(typeof(UILabel));
+
+            m_alignTools.tooltip = "Alignment Tools";
+            m_alignTools.atlas = UI.GetIconsAtlas();
+            m_alignTools.normalFgSprite = "AlignTools";
+
+            //Component[] component = filtersPanel.GetComponentsInChildren(typeof(UICheckBox));
+            //Component[] label = filtersPanel.GetComponentsInChildren(typeof(UILabel));
             //MoveMore.DebugLine($"{filtersPanel.childCount},{filtersPanel.height} component-length:{component.Length}, label-length:{label.Length}");
         }
     }
