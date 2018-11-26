@@ -9,26 +9,10 @@ namespace MoveMore
     [HarmonyPatch("RefreshAlignHeightButton")]
     class UITOP_RefreshAlignHeightButton
     {
-        private static UIButton m_alignTools;
-
-        public static bool Prefix()
+        public static void Postfix()
         {
-            UIToolOptionPanel instance = UIToolOptionPanel.instance;
-            m_alignTools = Traverse.Create(instance).Field("m_alignHeight").GetValue<UIButton>();
-
-            if (UIToolOptionPanel.instance != null && m_alignTools != null && MoveItTool.instance != null)
-            {
-                if (MoveItTool.instance.toolState == MoveItTool.ToolState.AligningHeights)
-                {
-                    m_alignTools.normalBgSprite = "OptionBaseFocused";
-                }
-                else
-                {
-                    m_alignTools.normalBgSprite = "OptionBase";
-                }
-            }
-
-            return false;
+            Debug.Log($"Mode:{MoveMore.AlignMode}");
+            UI.UpdateAlignToolsBtn();
         }
     }
 
@@ -37,16 +21,16 @@ namespace MoveMore
     [HarmonyPatch("Start")]
     class UITOP_Start
     {
-        private static UIButton m_marquee;
-        private static UIButton m_alignTools;
-
-        public static void Postfix(UIToolOptionPanel __instance, ref UIButton ___m_marquee, ref UIButton ___m_alignHeight)
+        public static void Postfix(UIToolOptionPanel __instance, ref UIButton ___m_marquee, ref UIButton ___m_alignHeight, ref UIButton ___m_single, ref UITabstrip ___m_tabStrip)
         {
             UIPanel filtersPanel, alignToolsPanel;
-            m_marquee = ___m_marquee;
-            m_alignTools = ___m_alignHeight;
-            __instance.RemoveUIComponent(__instance.filtersPanel);
+            ___m_alignHeight.isVisible = false;
+            ___m_alignHeight.enabled = false;
 
+            __instance.RemoveUIComponent(__instance.filtersPanel);
+            Traverse _UITOP = Traverse.Create(__instance);
+
+            #region Filter Panel
             filtersPanel = __instance.filtersPanel = __instance.AddUIComponent(typeof(UIPanel)) as UIPanel;
             filtersPanel.atlas = SamsamTS.UIUtils.GetAtlas("Ingame");
             filtersPanel.backgroundSprite = "SubcategoriesPanel";
@@ -64,21 +48,6 @@ namespace MoveMore
                     if (box != null)
                     {
                         if (NetworkFilter.GetNames().Exists(n => n.Equals(box.name))) continue;
-                        if (box != c) box.isChecked = false;
-                    }
-                }
-
-                ((UICheckBox)c).isChecked = true;
-            }
-
-            void OnDoubleClickNetworkFilter(UIComponent c, UIMouseEventParameter p)
-            {
-                foreach (UIComponent comp in filtersPanel.components)
-                {
-                    UICheckBox box = comp as UICheckBox;
-                    if (box != null)
-                    {
-                        if (!NetworkFilter.GetNames().Exists(n => n.Equals(box.name))) continue;
                         if (box != c) box.isChecked = false;
                     }
                 }
@@ -149,6 +118,21 @@ namespace MoveMore
             };
             checkBox.eventDoubleClick += OnDoubleClick;
 
+            void OnDoubleClickNetworkFilter(UIComponent c, UIMouseEventParameter p)
+            {
+                foreach (UIComponent comp in filtersPanel.components)
+                {
+                    UICheckBox box = comp as UICheckBox;
+                    if (box != null)
+                    {
+                        if (!NetworkFilter.GetNames().Exists(n => n.Equals(box.name))) continue;
+                        if (box != c) box.isChecked = false;
+                    }
+                }
+
+                ((UICheckBox)c).isChecked = true;
+            }
+
             UIButton btnNetworks = UI.CreateToggleNF();
 
             checkBox = SamsamTS.UIUtils.CreateCheckBox(filtersPanel);
@@ -212,7 +196,7 @@ namespace MoveMore
             checkBox.eventDoubleClick += OnDoubleClickNetworkFilter;
 
             checkBox = SamsamTS.UIUtils.CreateCheckBox(filtersPanel);
-            checkBox.label.text = "Other";
+            checkBox.label.text = "Others";
             checkBox.name = "NF-Other";
             checkBox.isChecked = true;
             checkBox.isVisible = false;
@@ -228,10 +212,9 @@ namespace MoveMore
             filtersPanel.autoLayoutPadding = new RectOffset(0, 0, 0, 5);
             filtersPanel.autoLayout = true;
             filtersPanel.height = 210;
-            filtersPanel.absolutePosition = m_marquee.absolutePosition - new Vector3(0, filtersPanel.height + 5);
+            filtersPanel.absolutePosition = ___m_marquee.absolutePosition - new Vector3(0, filtersPanel.height + 5);
 
-
-            m_marquee.eventDoubleClick += (UIComponent c, UIMouseEventParameter p) =>
+            ___m_marquee.eventDoubleClick += (UIComponent c, UIMouseEventParameter p) =>
             {
                 int u = 0;
                 bool v = false;
@@ -254,38 +237,52 @@ namespace MoveMore
                     }
                 }
             };
+            #endregion
 
 
-            m_alignTools.tooltip = "Alignment Tools";
-            m_alignTools.atlas = UI.GetIconsAtlas(__instance);
-            m_alignTools.normalFgSprite = "AlignTools";
+            #region AlignTool Panel
+            UI.AlignToolsBtn = __instance.AddUIComponent<UIButton>();
+            UI.AlignToolsBtn.relativePosition = ___m_tabStrip.relativePosition + new Vector3(___m_single.width + ___m_marquee.width, 0);
+            UI.AlignToolsBtn.tooltip = "Alignment Tools";
+            UI.AlignToolsBtn.atlas = UI.GetIconsAtlas();
+            UI.AlignToolsBtn.name = "AlignToolsBtn";
+            UI.AlignToolsBtn.normalFgSprite = "AlignTools";
+            UI.AlignToolsBtn.group = ___m_tabStrip;
+            UI.AlignToolsBtn.playAudioEvents = true;
+            UI.AlignToolsBtn.size = new Vector2(36, 36);
+            UI.AlignToolsBtn.normalBgSprite = "OptionBase";
+            UI.AlignToolsBtn.hoveredBgSprite = "OptionBaseHovered";
+            UI.AlignToolsBtn.pressedBgSprite = "OptionBasePressed";
+            UI.AlignToolsBtn.disabledBgSprite = "OptionBaseDisabled";
+            UI.AlignToolsBtn.eventClicked += UI.AlignToolsClicked;
 
             alignToolsPanel = __instance.AddUIComponent<UIPanel>();
             UI.AlignToolsPanel = alignToolsPanel;
             alignToolsPanel.clipChildren = true;
             alignToolsPanel.autoLayout = false;
-            alignToolsPanel.size = new Vector2(36, 160);
-            alignToolsPanel.isVisible = true;
-            alignToolsPanel.absolutePosition = m_alignTools.absolutePosition + new Vector3(5, 10 - alignToolsPanel.height);
-            alignToolsPanel.zOrder = __instance.zOrder + 1;
+            alignToolsPanel.size = new Vector2(36, 166);
+            alignToolsPanel.isVisible = false;
+            alignToolsPanel.absolutePosition = UI.AlignToolsBtn.absolutePosition + new Vector3(0, 10 - alignToolsPanel.height);
+            //alignToolsPanel.zOrder = m_alignTools.zOrder - 10;
+            UI.AlignToolsBtn.zOrder = alignToolsPanel.zOrder + 10;
 
             UIPanel atpBackground = alignToolsPanel.AddUIComponent<UIPanel>();
-            atpBackground.atlas = UI.GetIconsAtlas(__instance);
+            atpBackground.atlas = UI.GetIconsAtlas();
             atpBackground.backgroundSprite = "ColumnBG";
-            atpBackground.relativePosition = new Vector3(5, 5);
+            atpBackground.relativePosition = new Vector3(5, 10);
             atpBackground.width = atpBackground.parent.width - 10;
             atpBackground.opacity = 0.8f;
 
             UIPanel atpContainer = alignToolsPanel.AddUIComponent<UIPanel>();
             atpContainer.autoLayoutDirection = LayoutDirection.Vertical;
-            atpContainer.autoLayoutPadding = new RectOffset(0, 0, 0, 5);
+            atpContainer.autoLayoutPadding = new RectOffset(0, 0, 0, 3);
             atpContainer.autoLayout = true;
             atpContainer.relativePosition = Vector3.zero;
 
             UI.AlignButtons.Add("AlignRandom", atpContainer.AddUIComponent<UIButton>());
             UIButton alignRandom = UI.AlignButtons.GetValueSafe("AlignRandom");
             alignRandom.name = "AlignRandom";
-            alignRandom.atlas = UI.GetIconsAtlas(alignToolsPanel);
+            alignRandom.atlas = UI.GetIconsAtlas();
             alignRandom.tooltip = "Immediate rotate valid items randomly";
             alignRandom.playAudioEvents = true;
             alignRandom.size = new Vector2(36, 36);
@@ -294,37 +291,40 @@ namespace MoveMore
             alignRandom.pressedBgSprite = "OptionBasePressed";
             alignRandom.disabledBgSprite = "OptionBaseDisabled";
             alignRandom.normalFgSprite = "AlignRandom";
+            alignRandom.eventClicked += UI.AlignToolsClicked;
 
-            UI.AlignButtons.Add("AlignAll", atpContainer.AddUIComponent<UIButton>());
-            UIButton alignAll = UI.AlignButtons.GetValueSafe("AlignAll");
-            alignAll.name = "AlignAll";
-            alignAll.atlas = UI.GetIconsAtlas(alignToolsPanel);
-            alignAll.tooltip = "Align rotation all around single point";
-            alignAll.playAudioEvents = true;
-            alignAll.size = new Vector2(36, 36);
-            alignAll.normalBgSprite = "OptionBase";
-            alignAll.hoveredBgSprite = "OptionBaseHovered";
-            alignAll.pressedBgSprite = "OptionBasePressed";
-            alignAll.disabledBgSprite = "OptionBaseDisabled";
-            alignAll.normalFgSprite = "AlignAll";
+            UI.AlignButtons.Add("AlignGroup", atpContainer.AddUIComponent<UIButton>());
+            UIButton alignGroup = UI.AlignButtons.GetValueSafe("AlignGroup");
+            alignGroup.name = "AlignGroup";
+            alignGroup.atlas = UI.GetIconsAtlas();
+            alignGroup.tooltip = "Align rotation all around single point";
+            alignGroup.playAudioEvents = true;
+            alignGroup.size = new Vector2(36, 36);
+            alignGroup.normalBgSprite = "OptionBase";
+            alignGroup.hoveredBgSprite = "OptionBaseHovered";
+            alignGroup.pressedBgSprite = "OptionBasePressed";
+            alignGroup.disabledBgSprite = "OptionBaseDisabled";
+            alignGroup.normalFgSprite = "AlignGroup";
+            alignGroup.eventClicked += UI.AlignToolsClicked;
 
-            UI.AlignButtons.Add("AlignEach", atpContainer.AddUIComponent<UIButton>());
-            UIButton alignEach = UI.AlignButtons.GetValueSafe("AlignEach");
-            alignEach.name = "AlignEach";
-            alignEach.atlas = UI.GetIconsAtlas(alignToolsPanel);
-            alignEach.tooltip = "Align rotation individually";
-            alignEach.playAudioEvents = true;
-            alignEach.size = new Vector2(36, 36);
-            alignEach.normalBgSprite = "OptionBase";
-            alignEach.hoveredBgSprite = "OptionBaseHovered";
-            alignEach.pressedBgSprite = "OptionBasePressed";
-            alignEach.disabledBgSprite = "OptionBaseDisabled";
-            alignEach.normalFgSprite = "AlignEach";
+            UI.AlignButtons.Add("AlignIndividual", atpContainer.AddUIComponent<UIButton>());
+            UIButton alignIndividual = UI.AlignButtons.GetValueSafe("AlignIndividual");
+            alignIndividual.name = "AlignIndividual";
+            alignIndividual.atlas = UI.GetIconsAtlas();
+            alignIndividual.tooltip = "Align rotation individually";
+            alignIndividual.playAudioEvents = true;
+            alignIndividual.size = new Vector2(36, 36);
+            alignIndividual.normalBgSprite = "OptionBase";
+            alignIndividual.hoveredBgSprite = "OptionBaseHovered";
+            alignIndividual.pressedBgSprite = "OptionBasePressed";
+            alignIndividual.disabledBgSprite = "OptionBaseDisabled";
+            alignIndividual.normalFgSprite = "AlignIndividual";
+            alignIndividual.eventClicked += UI.AlignToolsClicked;
 
             UI.AlignButtons.Add("AlignHeight", atpContainer.AddUIComponent<UIButton>());
             UIButton alignHeight = UI.AlignButtons.GetValueSafe("AlignHeight");
             alignHeight.name = "AlignHeight";
-            alignHeight.atlas = UI.GetIconsAtlas(alignToolsPanel);
+            alignHeight.atlas = _UITOP.Method("GetIconsAtlas").GetValue<UITextureAtlas>();
             alignHeight.tooltip = "Align height";
             alignHeight.playAudioEvents = true;
             alignHeight.size = new Vector2(36, 36);
@@ -333,6 +333,8 @@ namespace MoveMore
             alignHeight.pressedBgSprite = "OptionBasePressed";
             alignHeight.disabledBgSprite = "OptionBaseDisabled";
             alignHeight.normalFgSprite = "AlignHeight";
+            alignHeight.eventClicked += UI.AlignToolsClicked;
+            #endregion
         }
     }
 }

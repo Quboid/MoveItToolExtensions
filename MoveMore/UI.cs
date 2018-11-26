@@ -9,28 +9,146 @@ namespace MoveMore
     class UI
     {
         public static List<UICheckBox> NetworkCheckboxes = new List<UICheckBox>();
-        public static UIButton ToggleNF;
+        public static UIButton ToggleNF, AlignToolsBtn;
         public static UIPanel FilterPanel, AlignToolsPanel;
         public static Dictionary<string, UIButton> AlignButtons = new Dictionary<string, UIButton>();
         public static Color32 TextColor = new Color32(175, 216, 235, 255);
 
+        public static void AlignToolsClicked(UIComponent c, UIMouseEventParameter p)
+        {
+            switch (c.name)
+            {
+                case "AlignToolsBtn":
+                    //MoveMore.AlignMode = MoveMore.AlignModes.Off;
 
-        public static UITextureAtlas GetIconsAtlas(UIPanel panel)
+                    if (AlignToolsPanel.isVisible)
+                    {
+                        AlignToolsPanel.isVisible = false;
+                    }
+                    else
+                    {
+                        AlignToolsPanel.isVisible = true;
+                    }
+                    break;
+
+                case "AlignHeight":
+                    if (MoveMore.AlignMode == MoveMore.AlignModes.Height)
+                    {
+                        Debug.Log("MM.mode turning off");
+                        MoveMore.AlignMode = MoveMore.AlignModes.Off;
+                        MoveItTool.instance.toolState = MoveItTool.ToolState.Default;
+                        break;
+                    }
+                    
+                    if (MoveItTool.instance != null)
+                    {
+                        if (MoveItTool.instance.toolState == MoveItTool.ToolState.AligningHeights)
+                        {
+                            Debug.Log("MIT.tool turning off");
+                            MoveMore.AlignMode = MoveMore.AlignModes.Off;
+                            MoveItTool.instance.toolState = MoveItTool.ToolState.Default;
+                        }
+                        else
+                        {
+                            Debug.Log("MIT.tool turning on");
+                            MoveItTool.instance.StartAligningHeights();
+                            if (MoveItTool.instance.toolState == MoveItTool.ToolState.AligningHeights)
+                            {
+                                MoveMore.AlignMode = MoveMore.AlignModes.Height;
+                            }
+                        }
+                    }
+
+                    AlignToolsPanel.isVisible = false;
+                    UpdateAlignToolsBtn();
+                    break;
+
+                case "AlignIndividual":
+                    MoveMore.AlignMode = MoveMore.AlignModes.Individual;
+
+                    AlignToolsPanel.isVisible = false;
+                    UpdateAlignToolsBtn();
+                    break;
+
+                case "AlignGroup":
+                    if (MoveMore.AlignMode == MoveMore.AlignModes.Group)
+                    {
+                        MoveMore.AlignMode = MoveMore.AlignModes.Off;
+                    }
+                    else
+                    {
+                        MoveMore.AlignMode = MoveMore.AlignModes.Group;
+                    }
+
+                    AlignToolsPanel.isVisible = false;
+                    UpdateAlignToolsBtn();
+                    break;
+
+                case "AlignRandom":
+                    MoveMore.AlignMode = MoveMore.AlignModes.Random;
+
+                    AlignRotationAction action = new AlignRandomAction();
+                    action.followTerrain = MoveItTool.followTerrain;
+                    ActionQueue.instance.Push(action);
+                    ActionQueue.instance.Do();
+                    MoveMore.DeactivateAlignTool();
+
+                    AlignToolsPanel.isVisible = false;
+                    UpdateAlignToolsBtn();
+                    break;
+            }
+            Debug.Log($"{c.name} clicked, mode is {MoveMore.AlignMode}");
+        }
+
+
+        public static void UpdateAlignToolsBtn()
+        {
+            switch (MoveMore.AlignMode)
+            {
+                case MoveMore.AlignModes.Height:
+                    AlignToolsBtn.atlas = Traverse.Create(UIToolOptionPanel.instance).Method("GetIconsAtlas").GetValue<UITextureAtlas>();
+                    AlignToolsBtn.normalFgSprite = "AlignHeight";
+                    AlignToolsBtn.normalBgSprite = "OptionBaseFocused";
+                    break;
+
+                case MoveMore.AlignModes.Individual:
+                    AlignToolsBtn.atlas = GetIconsAtlas();
+                    AlignToolsBtn.normalFgSprite = "AlignIndividual";
+                    AlignToolsBtn.normalBgSprite = "OptionBaseFocused";
+                    break;
+
+                case MoveMore.AlignModes.Group:
+                    AlignToolsBtn.atlas = GetIconsAtlas();
+                    AlignToolsBtn.normalFgSprite = "AlignGroup";
+                    AlignToolsBtn.normalBgSprite = "OptionBaseFocused";
+                    break;
+                
+                // Random mode is instant, button isn't relevant
+                default:
+                    AlignToolsBtn.atlas = GetIconsAtlas();
+                    AlignToolsBtn.normalFgSprite = "AlignTools";
+                    AlignToolsBtn.normalBgSprite = "OptionBase";
+                    break;
+            }
+        }
+
+
+        public static UITextureAtlas GetIconsAtlas()
         {
             Texture2D[] textures =
             {
-                panel.atlas["OptionBase"].texture,
-                panel.atlas["OptionBaseHovered"].texture,
-                panel.atlas["OptionBasePressed"].texture,
-                panel.atlas["OptionBaseDisabled"].texture,
-                panel.atlas["OptionBaseFocused"].texture
+                UIToolOptionPanel.instance.atlas["OptionBase"].texture,
+                UIToolOptionPanel.instance.atlas["OptionBaseHovered"].texture,
+                UIToolOptionPanel.instance.atlas["OptionBasePressed"].texture,
+                UIToolOptionPanel.instance.atlas["OptionBaseDisabled"].texture,
+                UIToolOptionPanel.instance.atlas["OptionBaseFocused"].texture
             };
 
             string[] spriteNames = new string[]
             {
                 "AlignTools",
-                "AlignEach",
-                "AlignAll",
+                "AlignIndividual",
+                "AlignGroup",
                 "AlignRandom",
                 "ColumnBG"
             };

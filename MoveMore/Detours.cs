@@ -16,18 +16,22 @@ namespace MoveMore
     [HarmonyPatch("StopAligningHeights")]
     class MIT_StopAligningHeights
     {
-        public static void Prefix(MoveItTool __instance)
+        public static bool Prefix(MoveItTool __instance)
         {
-            if (__instance.toolState == MoveItTool.ToolState.AligningHeights && MoveMore.AlignMode != MoveMore.AlignModes.Off)
+            Debug.Log($"toolState:{__instance.toolState}");
+            if (__instance.toolState == MoveItTool.ToolState.AligningHeights)
             {
                 // User switched tool
+                Debug.Log($"User switched tool");
+                __instance.toolState = MoveItTool.ToolState.Default;
                 MoveMore.AlignMode = MoveMore.AlignModes.Off;
+                UI.UpdateAlignToolsBtn();
             }
+            return false;
         }
     }
 
 
-    // Completely replaces MoveIt's OnLeftClick
     [HarmonyPatch(typeof(MoveItTool))]
     [HarmonyPatch("OnLeftClick")]
     class MIT_OnLeftClick
@@ -37,7 +41,7 @@ namespace MoveMore
             if (___m_hoverInstance == null)
                 return true;
 
-            if (MoveMore.AlignMode != MoveMore.AlignModes.Off)
+            if (MoveMore.AlignMode != MoveMore.AlignModes.Off && MoveMore.AlignMode != MoveMore.AlignModes.Height)
             {
                 float angle;
 
@@ -65,19 +69,19 @@ namespace MoveMore
                 else
                 {
                     //Debug.Log($"Wrong hover asset type <{___m_hoverInstance.GetType()}>");
-                    return MoveMore.DeactivateAR();
+                    return MoveMore.DeactivateAlignTool();
                 }
 
                 // Add action to queue, also enables Undo/Redo
                 AlignRotationAction action;
                 switch (MoveMore.AlignMode)
                 {
-                    case MoveMore.AlignModes.All:
-                        action = new AlignGroupRotationAction();
+                    case MoveMore.AlignModes.Group:
+                        action = new AlignGroupAction();
                         break;
 
                     default:
-                        action = new AlignEachRotationAction();
+                        action = new AlignIndividualAction();
                         break;
                 }
                 action.newAngle = angle;
@@ -86,7 +90,17 @@ namespace MoveMore
                 ___m_nextAction = MoveMore.TOOL_ACTION_DO;
 
                 //Debug.Log($"Angle:{angle}, from {___m_hoverInstance}");
-                return MoveMore.DeactivateAR(false);
+                return MoveMore.DeactivateAlignTool(false);
+            }
+
+            if (__instance.toolState == MoveItTool.ToolState.AligningHeights)
+            {
+                Debug.Log($"toolState is AligningHeights, AlignMode:{MoveMore.AlignMode}");
+                if (MoveMore.AlignMode == MoveMore.AlignModes.Height)
+                {
+                    MoveMore.AlignMode = MoveMore.AlignModes.Off;
+                }
+                UI.UpdateAlignToolsBtn();
             }
 
             return true;

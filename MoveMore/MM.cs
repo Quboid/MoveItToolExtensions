@@ -33,7 +33,7 @@ namespace MoveMore
             { "NF-Other", new NetworkFilter(true,  null ) }
         };
 
-        public enum AlignModes { Off, Each, All, Random };
+        public enum AlignModes { Off, Height, Individual, Group, Random };
         public static AlignModes AlignMode = AlignModes.Off;
 
         private static bool debugInitialised = false;
@@ -68,15 +68,15 @@ namespace MoveMore
         }
 
 
-        public static bool DeactivateAR(bool switchMode = true)
+        public static bool DeactivateAlignTool(bool switchMode = true)
         {
             if (switchMode)
             {
                 AlignMode = AlignModes.Off;
             }
-            MoveItTool tool = (MoveItTool)ColossalFramework.Singleton<ToolController>.instance.CurrentTool;
-            tool.toolState = MoveItTool.ToolState.Default;
-            UIToolOptionPanel.RefreshAlignHeightButton();
+            //MoveItTool tool = (MoveItTool)ColossalFramework.Singleton<ToolController>.instance.CurrentTool;
+            ((MoveItTool)ColossalFramework.Singleton<ToolController>.instance.CurrentTool).toolState = MoveItTool.ToolState.Default;
+            UI.UpdateAlignToolsBtn();
             MoveIt.Action.UpdateArea(MoveIt.Action.GetTotalBounds(false));
             return false;
         }
@@ -114,7 +114,7 @@ namespace MoveMore
                     // Action
                     if (MoveMore.AlignMode != MoveMore.AlignModes.Off)
                     { // Switch Off
-                        MoveMore.DeactivateAR();
+                        MoveMore.DeactivateAlignTool();
                     }
                     else
                     {
@@ -126,22 +126,22 @@ namespace MoveMore
                         {
                             if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))
                             {
-                                MoveMore.AlignMode = MoveMore.AlignModes.All;
+                                MoveMore.AlignMode = MoveMore.AlignModes.Group;
                             }
                             else if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
                             {
                                 MoveMore.AlignMode = MoveMore.AlignModes.Random;
 
                                 // Perform action immediately
-                                AlignRotationAction action = new AlignRandomRotationAction();
+                                AlignRotationAction action = new AlignRandomAction();
                                 action.followTerrain = MoveItTool.followTerrain;
                                 ActionQueue.instance.Push(action);
                                 ActionQueue.instance.Do();
-                                MoveMore.DeactivateAR();
+                                MoveMore.DeactivateAlignTool();
                             }
                             else
                             {
-                                MoveMore.AlignMode = MoveMore.AlignModes.Each;
+                                MoveMore.AlignMode = MoveMore.AlignModes.Individual;
                             }
                             if (tool.toolState != MoveItTool.ToolState.AligningHeights)
                             {

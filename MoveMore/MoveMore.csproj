@@ -74,11 +74,13 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Icons\AlignRandom.png" />
-    <EmbeddedResource Include="Icons\AlignEach.png" />
     <EmbeddedResource Include="Icons\AlignTools.png" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Icons\AlignAll.png" />
+    <EmbeddedResource Include="Icons\AlignGroup.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Icons\AlignIndividual.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

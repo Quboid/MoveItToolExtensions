@@ -5,15 +5,15 @@ using UnityEngine;
 
 namespace MoveMore
 {
-    public class AlignEachRotationAction : AlignRotationAction
+    public class AlignIndividualAction : AlignRotationAction
     {
     }
 
-    public class AlignGroupRotationAction : AlignRotationAction
+    public class AlignGroupAction : AlignRotationAction
     {
     }
 
-    public class AlignRandomRotationAction : AlignRotationAction
+    public class AlignRandomAction : AlignRotationAction
     {
     }
 
@@ -102,13 +102,13 @@ namespace MoveMore
                             mb.RemoveFixedHeightFlag(mb.id.Building);
                         }
 
-                        if (this is AlignEachRotationAction)
+                        if (this is AlignIndividualAction)
                         {
                             angleDelta = 0 - mb.angle + newAngle;
                             PoR = state.position;
                             //Debug.Log($"B:Each ({Mod.mode},{GetType()} - delta:{angleDelta}, PoR:{PoR}");
                         }
-                        else if (this is AlignRandomRotationAction)
+                        else if (this is AlignRandomAction)
                         {
                             angleDelta = 0 - mb.angle + (float)(random.NextDouble() * Math.PI * 2);
                             PoR = state.position;
@@ -133,13 +133,13 @@ namespace MoveMore
                     }
                     else if (state.instance is MoveableProp mp)
                     {
-                        if (this is AlignEachRotationAction)
+                        if (this is AlignIndividualAction)
                         {
                             angleDelta = 0 - mp.angle + newAngle;
                             PoR = state.position;
                             //Debug.Log($"P:Each ({Mod.mode},{GetType()}) - delta:{angleDelta}, PoR:{PoR}, bounds Size:{bounds.size}");
                         }
-                        else if (this is AlignRandomRotationAction)
+                        else if (this is AlignRandomAction)
                         {
                             angleDelta = 0 - mp.angle + (float)(random.NextDouble() * Math.PI * 2);
                             PoR = state.position;
