@@ -2,7 +2,7 @@
 using MoveIt;
 using UnityEngine;
 
-namespace MoveMore.Moveable
+namespace MITE.Moveable
 {
     [HarmonyPatch(typeof(MoveableBuilding))]
     [HarmonyPatch("Transform")]

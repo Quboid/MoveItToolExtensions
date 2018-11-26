@@ -3,25 +3,25 @@ using Harmony;
 using MoveIt;
 using UnityEngine;
 
-namespace MoveMore
+namespace MITE
 {
-    [HarmonyPatch(typeof(UIToolOptionPanel))]
-    [HarmonyPatch("RefreshAlignHeightButton")]
-    class UITOP_RefreshAlignHeightButton
-    {
-        public static void Postfix()
-        {
-            Debug.Log($"Mode:{MoveMore.AlignMode}");
-            UI.UpdateAlignToolsBtn();
-        }
-    }
+    //[HarmonyPatch(typeof(UIToolOptionPanel))]
+    //[HarmonyPatch("RefreshAlignHeightButton")]
+    //class UITOP_RefreshAlignHeightButton
+    //{
+    //    public static void Postfix()
+    //    {
+    //        Debug.Log($"Mode:{MITE.AlignMode}");
+    //        UI.UpdateAlignTools();
+    //    }
+    //}
 
 
     [HarmonyPatch(typeof(UIToolOptionPanel))]
     [HarmonyPatch("Start")]
     class UITOP_Start
     {
-        public static void Postfix(UIToolOptionPanel __instance, ref UIButton ___m_marquee, ref UIButton ___m_alignHeight, ref UIButton ___m_single, ref UITabstrip ___m_tabStrip)
+        public static void Postfix(UIToolOptionPanel __instance, ref UIButton ___m_marquee, ref UIButton ___m_alignHeight, ref UIButton ___m_single, ref UIButton ___m_copy, ref UIButton ___m_bulldoze, ref UITabstrip ___m_tabStrip)
         {
             UIPanel filtersPanel, alignToolsPanel;
             ___m_alignHeight.isVisible = false;
@@ -30,8 +30,8 @@ namespace MoveMore
             __instance.RemoveUIComponent(__instance.filtersPanel);
             Traverse _UITOP = Traverse.Create(__instance);
 
-            #region Filter Panel
             filtersPanel = __instance.filtersPanel = __instance.AddUIComponent(typeof(UIPanel)) as UIPanel;
+            #region Filter Panel
             filtersPanel.atlas = SamsamTS.UIUtils.GetAtlas("Ingame");
             filtersPanel.backgroundSprite = "SubcategoriesPanel";
             filtersPanel.clipChildren = true;
@@ -87,7 +87,7 @@ namespace MoveMore
             checkBox.isChecked = true;
             checkBox.eventCheckChanged += (c, p) =>
             {
-                MoveMore.filterSurfaces = p;
+                MITE.filterSurfaces = p;
             };
             checkBox.eventDoubleClick += OnDoubleClick;
 
@@ -212,7 +212,8 @@ namespace MoveMore
             filtersPanel.autoLayoutPadding = new RectOffset(0, 0, 0, 5);
             filtersPanel.autoLayout = true;
             filtersPanel.height = 210;
-            filtersPanel.absolutePosition = ___m_marquee.absolutePosition - new Vector3(0, filtersPanel.height + 5);
+            filtersPanel.absolutePosition = ___m_marquee.absolutePosition + new Vector3(-57, -5 - filtersPanel.height);
+            //Debug.Log($"\n{___m_marquee.absolutePosition}\n{filtersPanel.absolutePosition}");
 
             ___m_marquee.eventDoubleClick += (UIComponent c, UIMouseEventParameter p) =>
             {
@@ -240,12 +241,14 @@ namespace MoveMore
             #endregion
 
 
-            #region AlignTool Panel
             UI.AlignToolsBtn = __instance.AddUIComponent<UIButton>();
-            UI.AlignToolsBtn.relativePosition = ___m_tabStrip.relativePosition + new Vector3(___m_single.width + ___m_marquee.width, 0);
+            #region AlignTool Panel
+            ___m_copy.relativePosition -= new Vector3(___m_alignHeight.width, 0);
+            ___m_bulldoze.relativePosition -= new Vector3(___m_alignHeight.width, 0);
+            UI.AlignToolsBtn.relativePosition = new Vector3(___m_bulldoze.relativePosition.x + ___m_bulldoze.width, 0);
+            UI.AlignToolsBtn.name = "AlignToolsBtn";
             UI.AlignToolsBtn.tooltip = "Alignment Tools";
             UI.AlignToolsBtn.atlas = UI.GetIconsAtlas();
-            UI.AlignToolsBtn.name = "AlignToolsBtn";
             UI.AlignToolsBtn.normalFgSprite = "AlignTools";
             UI.AlignToolsBtn.group = ___m_tabStrip;
             UI.AlignToolsBtn.playAudioEvents = true;

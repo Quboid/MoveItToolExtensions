@@ -4,7 +4,7 @@ using MoveIt;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace MoveMore
+namespace MITE
 {
     class UI
     {
@@ -19,115 +19,150 @@ namespace MoveMore
             switch (c.name)
             {
                 case "AlignToolsBtn":
-                    //MoveMore.AlignMode = MoveMore.AlignModes.Off;
+                    //MITE.AlignMode = MITE.AlignModes.Off;
 
                     if (AlignToolsPanel.isVisible)
                     {
                         AlignToolsPanel.isVisible = false;
+                        //MITE.AlignMode = MITE.AlignModes.Off;
                     }
                     else
                     {
                         AlignToolsPanel.isVisible = true;
                     }
+                    UpdateAlignTools();
                     break;
 
                 case "AlignHeight":
-                    if (MoveMore.AlignMode == MoveMore.AlignModes.Height)
+                    if (MITE.AlignMode == MITE.AlignModes.Height)
                     {
-                        Debug.Log("MM.mode turning off");
-                        MoveMore.AlignMode = MoveMore.AlignModes.Off;
+                        MITE.AlignMode = MITE.AlignModes.Off;
                         MoveItTool.instance.toolState = MoveItTool.ToolState.Default;
-                        break;
-                    }
-                    
-                    if (MoveItTool.instance != null)
-                    {
-                        if (MoveItTool.instance.toolState == MoveItTool.ToolState.AligningHeights)
-                        {
-                            Debug.Log("MIT.tool turning off");
-                            MoveMore.AlignMode = MoveMore.AlignModes.Off;
-                            MoveItTool.instance.toolState = MoveItTool.ToolState.Default;
-                        }
-                        else
-                        {
-                            Debug.Log("MIT.tool turning on");
-                            MoveItTool.instance.StartAligningHeights();
-                            if (MoveItTool.instance.toolState == MoveItTool.ToolState.AligningHeights)
-                            {
-                                MoveMore.AlignMode = MoveMore.AlignModes.Height;
-                            }
-                        }
-                    }
-
-                    AlignToolsPanel.isVisible = false;
-                    UpdateAlignToolsBtn();
-                    break;
-
-                case "AlignIndividual":
-                    MoveMore.AlignMode = MoveMore.AlignModes.Individual;
-
-                    AlignToolsPanel.isVisible = false;
-                    UpdateAlignToolsBtn();
-                    break;
-
-                case "AlignGroup":
-                    if (MoveMore.AlignMode == MoveMore.AlignModes.Group)
-                    {
-                        MoveMore.AlignMode = MoveMore.AlignModes.Off;
                     }
                     else
                     {
-                        MoveMore.AlignMode = MoveMore.AlignModes.Group;
+                        MoveItTool.instance.StartAligningHeights();
+                        if (MoveItTool.instance.toolState == MoveItTool.ToolState.AligningHeights)
+                        { // Change MITE's mode only if MoveIt changed to AligningHeights
+                            MITE.AlignMode = MITE.AlignModes.Height;
+                        }
                     }
+                    //AlignToolsPanel.isVisible = false;
+                    UpdateAlignTools();
+                    break;
 
-                    AlignToolsPanel.isVisible = false;
-                    UpdateAlignToolsBtn();
+                case "AlignIndividual":
+                    if (MITE.AlignMode == MITE.AlignModes.Individual)
+                    {
+                        MITE.AlignMode = MITE.AlignModes.Off;
+                    }
+                    else
+                    {
+                        if (MoveItTool.instance.toolState == MoveItTool.ToolState.Cloning || MoveItTool.instance.toolState == MoveItTool.ToolState.RightDraggingClone)
+                        {
+                            MoveItTool.instance.StopCloning();
+                        }
+
+                        if (Action.selection.Count > 0)
+                        {
+                            MITE.AlignMode = MITE.AlignModes.Individual;
+                        }
+                    }
+                    //AlignToolsPanel.isVisible = false;
+                    UpdateAlignTools();
+                    break;
+
+                case "AlignGroup":
+                    if (MITE.AlignMode == MITE.AlignModes.Group)
+                    {
+                        MITE.AlignMode = MITE.AlignModes.Off;
+                    }
+                    else
+                    {
+                        if (MoveItTool.instance.toolState == MoveItTool.ToolState.Cloning || MoveItTool.instance.toolState == MoveItTool.ToolState.RightDraggingClone)
+                        {
+                            MoveItTool.instance.StopCloning();
+                        }
+
+                        if (Action.selection.Count > 0)
+                        {
+                            MITE.AlignMode = MITE.AlignModes.Group;
+                        }
+                    }
+                    //AlignToolsPanel.isVisible = false;
+                    UpdateAlignTools();
                     break;
 
                 case "AlignRandom":
-                    MoveMore.AlignMode = MoveMore.AlignModes.Random;
+                    MITE.AlignMode = MITE.AlignModes.Random;
+
+                    if (MoveItTool.instance.toolState == MoveItTool.ToolState.Cloning || MoveItTool.instance.toolState == MoveItTool.ToolState.RightDraggingClone)
+                    {
+                        MoveItTool.instance.StopCloning();
+                    }
 
                     AlignRotationAction action = new AlignRandomAction();
                     action.followTerrain = MoveItTool.followTerrain;
                     ActionQueue.instance.Push(action);
                     ActionQueue.instance.Do();
-                    MoveMore.DeactivateAlignTool();
+                    MITE.DeactivateAlignTool();
 
-                    AlignToolsPanel.isVisible = false;
-                    UpdateAlignToolsBtn();
+                    //AlignToolsPanel.isVisible = false;
+                    UpdateAlignTools();
                     break;
             }
-            Debug.Log($"{c.name} clicked, mode is {MoveMore.AlignMode}");
+            //Debug.Log($"{c.name} clicked, mode is {MITE.AlignMode}");
         }
 
 
-        public static void UpdateAlignToolsBtn()
+        public static void UpdateAlignTools()
         {
-            switch (MoveMore.AlignMode)
+            //string msg = "";
+            AlignToolsBtn.atlas = AlignButtons.GetValueSafe("AlignGroup").atlas;
+            AlignToolsBtn.normalFgSprite = "AlignTools";
+            foreach (UIButton btn in AlignButtons.Values)
             {
-                case MoveMore.AlignModes.Height:
-                    AlignToolsBtn.atlas = Traverse.Create(UIToolOptionPanel.instance).Method("GetIconsAtlas").GetValue<UITextureAtlas>();
-                    AlignToolsBtn.normalFgSprite = "AlignHeight";
+                //msg = msg + $"\n{btn.name} ({MITE.AlignMode},{MoveItTool.instance.toolState})";
+                btn.normalBgSprite = "OptionBase";
+            }
+            //Debug.Log(msg);
+
+            switch (MITE.AlignMode)
+            {
+                case MITE.AlignModes.Height:
+                    if (!AlignToolsPanel.isVisible)
+                    {
+                        AlignToolsBtn.atlas = AlignButtons.GetValueSafe("AlignHeight").atlas;
+                        AlignToolsBtn.normalFgSprite = "AlignHeight";
+                    }
                     AlignToolsBtn.normalBgSprite = "OptionBaseFocused";
+                    AlignButtons.GetValueSafe("AlignHeight").normalBgSprite = "OptionBaseFocused";
                     break;
 
-                case MoveMore.AlignModes.Individual:
-                    AlignToolsBtn.atlas = GetIconsAtlas();
-                    AlignToolsBtn.normalFgSprite = "AlignIndividual";
+                case MITE.AlignModes.Individual:
+                    AlignToolsBtn.atlas = AlignButtons.GetValueSafe("AlignIndividual").atlas;
+                    if (!AlignToolsPanel.isVisible) AlignToolsBtn.normalFgSprite = "AlignIndividual";
                     AlignToolsBtn.normalBgSprite = "OptionBaseFocused";
+                    AlignButtons.GetValueSafe("AlignIndividual").normalBgSprite = "OptionBaseFocused";
                     break;
 
-                case MoveMore.AlignModes.Group:
-                    AlignToolsBtn.atlas = GetIconsAtlas();
-                    AlignToolsBtn.normalFgSprite = "AlignGroup";
+                case MITE.AlignModes.Group:
+                    AlignToolsBtn.atlas = AlignButtons.GetValueSafe("AlignGroup").atlas;
+                    if (!AlignToolsPanel.isVisible) AlignToolsBtn.normalFgSprite = "AlignGroup";
                     AlignToolsBtn.normalBgSprite = "OptionBaseFocused";
+                    AlignButtons.GetValueSafe("AlignGroup").normalBgSprite = "OptionBaseFocused";
                     break;
                 
                 // Random mode is instant, button isn't relevant
                 default:
-                    AlignToolsBtn.atlas = GetIconsAtlas();
-                    AlignToolsBtn.normalFgSprite = "AlignTools";
-                    AlignToolsBtn.normalBgSprite = "OptionBase";
+                    if (AlignToolsPanel.isVisible)
+                    {
+                        AlignToolsBtn.normalBgSprite = "OptionBaseFocused";
+                    }
+                    else
+                    {
+                        AlignToolsBtn.normalBgSprite = "OptionBase";
+                    }
                     break;
             }
         }
@@ -153,7 +188,7 @@ namespace MoveMore
                 "ColumnBG"
             };
 
-            UITextureAtlas loadedAtlas = ResourceLoader.CreateTextureAtlas("MoveMore", spriteNames, "MoveMore.Icons.");
+            UITextureAtlas loadedAtlas = ResourceLoader.CreateTextureAtlas("MITE", spriteNames, "MITE.Icons.");
             ResourceLoader.AddTexturesInAtlas(loadedAtlas, textures);
 
             return loadedAtlas;
@@ -189,7 +224,7 @@ namespace MoveMore
 
         private static void _updateToggleNF()
         {
-            if (MoveMore.filterNetworks)
+            if (MITE.filterNetworks)
             { // Network Filters visible
                 ToggleNF.text = "^";
                 ToggleNF.textPadding = new RectOffset(0, 0, 6, 0);
@@ -221,10 +256,10 @@ namespace MoveMore
 
         public static void ToggleNetworks()
         {
-            MoveMore.filterNetworks = !MoveMore.filterNetworks;
-            int filterRows = MoveMore.NetworkFilters.Count;
+            MITE.filterNetworks = !MITE.filterNetworks;
+            int filterRows = MITE.NetworkFilters.Count;
 
-            if (MoveMore.filterNetworks)
+            if (MITE.filterNetworks)
             {
                 foreach (UICheckBox cb in NetworkCheckboxes)
                 {
@@ -238,8 +273,8 @@ namespace MoveMore
                     }
                 }
 
-                FilterPanel.height += MoveMore.UI_FILTER_CB_HEIGHT * filterRows;
-                FilterPanel.absolutePosition += new Vector3(0f, 0 - (MoveMore.UI_FILTER_CB_HEIGHT * filterRows), 0);
+                FilterPanel.height += MITE.UI_FILTER_CB_HEIGHT * filterRows;
+                FilterPanel.absolutePosition += new Vector3(0f, 0 - (MITE.UI_FILTER_CB_HEIGHT * filterRows));
                 _updateToggleNF();
             }
             else
@@ -256,8 +291,8 @@ namespace MoveMore
                     }
                 }
 
-                FilterPanel.height -= MoveMore.UI_FILTER_CB_HEIGHT * filterRows;
-                FilterPanel.absolutePosition -= new Vector3(0f, 0 - (MoveMore.UI_FILTER_CB_HEIGHT * filterRows), 0);
+                FilterPanel.height -= MITE.UI_FILTER_CB_HEIGHT * filterRows;
+                FilterPanel.absolutePosition -= new Vector3(0f, 0 - (MITE.UI_FILTER_CB_HEIGHT * filterRows));
                 _updateToggleNF();
             }
 

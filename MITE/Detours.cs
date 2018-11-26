@@ -10,7 +10,7 @@ using UnityEngine;
 
 // More detours in Moveable*.cs, UI_Filters.cs and Filter_Detours.cs
 
-namespace MoveMore
+namespace MITE
 {
     [HarmonyPatch(typeof(MoveItTool))]
     [HarmonyPatch("StopAligningHeights")]
@@ -18,16 +18,32 @@ namespace MoveMore
     {
         public static bool Prefix(MoveItTool __instance)
         {
-            Debug.Log($"toolState:{__instance.toolState}");
+            //Debug.Log($"toolState:{__instance.toolState}");
             if (__instance.toolState == MoveItTool.ToolState.AligningHeights)
             {
                 // User switched tool
-                Debug.Log($"User switched tool");
                 __instance.toolState = MoveItTool.ToolState.Default;
-                MoveMore.AlignMode = MoveMore.AlignModes.Off;
-                UI.UpdateAlignToolsBtn();
+                MITE.AlignMode = MITE.AlignModes.Off;
+                UI.UpdateAlignTools();
             }
             return false;
+        }
+    }
+
+
+    [HarmonyPatch(typeof(MoveItTool))]
+    [HarmonyPatch("StartAligningHeights")]
+    class MIT_StatAligningHeights
+    {
+        public static void Postfix(MoveItTool __instance)
+        {
+            //Debug.Log($"toolState:{__instance.toolState}");
+            if (__instance.toolState == MoveItTool.ToolState.AligningHeights)
+            {
+                MITE.AlignMode = MITE.AlignModes.Height;
+                UI.UpdateAlignTools();
+            }
+            return;
         }
     }
 
@@ -41,7 +57,7 @@ namespace MoveMore
             if (___m_hoverInstance == null)
                 return true;
 
-            if (MoveMore.AlignMode != MoveMore.AlignModes.Off && MoveMore.AlignMode != MoveMore.AlignModes.Height)
+            if (MITE.AlignMode != MITE.AlignModes.Off && MITE.AlignMode != MITE.AlignModes.Height)
             {
                 float angle;
 
@@ -69,14 +85,14 @@ namespace MoveMore
                 else
                 {
                     //Debug.Log($"Wrong hover asset type <{___m_hoverInstance.GetType()}>");
-                    return MoveMore.DeactivateAlignTool();
+                    return MITE.DeactivateAlignTool();
                 }
 
                 // Add action to queue, also enables Undo/Redo
                 AlignRotationAction action;
-                switch (MoveMore.AlignMode)
+                switch (MITE.AlignMode)
                 {
-                    case MoveMore.AlignModes.Group:
+                    case MITE.AlignModes.Group:
                         action = new AlignGroupAction();
                         break;
 
@@ -87,20 +103,20 @@ namespace MoveMore
                 action.newAngle = angle;
                 action.followTerrain = MoveItTool.followTerrain;
                 ActionQueue.instance.Push(action);
-                ___m_nextAction = MoveMore.TOOL_ACTION_DO;
+                ___m_nextAction = MITE.TOOL_ACTION_DO;
 
                 //Debug.Log($"Angle:{angle}, from {___m_hoverInstance}");
-                return MoveMore.DeactivateAlignTool(false);
+                return MITE.DeactivateAlignTool(false);
             }
 
             if (__instance.toolState == MoveItTool.ToolState.AligningHeights)
             {
-                Debug.Log($"toolState is AligningHeights, AlignMode:{MoveMore.AlignMode}");
-                if (MoveMore.AlignMode == MoveMore.AlignModes.Height)
+                //Debug.Log($"toolState is AligningHeights, AlignMode:{MITE.AlignMode}");
+                if (MITE.AlignMode == MITE.AlignModes.Height)
                 {
-                    MoveMore.AlignMode = MoveMore.AlignModes.Off;
+                    MITE.AlignMode = MITE.AlignModes.Off;
                 }
-                UI.UpdateAlignToolsBtn();
+                UI.UpdateAlignTools();
             }
 
             return true;

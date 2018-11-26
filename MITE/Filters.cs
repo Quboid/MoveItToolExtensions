@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace MoveMore
+namespace MITE
 {
     class Filters
     {
@@ -40,7 +40,7 @@ namespace MoveMore
 
             if (IsSurface(info))
             {
-                if (MoveMore.filterSurfaces)
+                if (MITE.filterSurfaces)
                 {
                     return true;
                 }
@@ -71,7 +71,7 @@ namespace MoveMore
         {
             //Debug.Log($"{info.name}");
             if (!MoveItTool.marqueeSelection) return true;
-            if (!MoveMore.filterNetworks) return true;
+            if (!MITE.filterNetworks) return true;
 
             NetworkFilter nf = NetworkFilter.GetFilter(info.GetAI().GetType());
             return nf.enabled;
@@ -92,15 +92,15 @@ namespace MoveMore
 
         public static void SetFilter(string name, bool e)
         {
-            MoveMore.NetworkFilters.GetValueSafe(name).enabled = e;
+            MITE.NetworkFilters.GetValueSafe(name).enabled = e;
         }
 
         public static void ToggleFilter(string name)
         {
-            MoveMore.NetworkFilters.GetValueSafe(name).enabled = !MoveMore.NetworkFilters.GetValueSafe(name).enabled;
-            
+            MITE.NetworkFilters.GetValueSafe(name).enabled = !MITE.NetworkFilters.GetValueSafe(name).enabled;
+
             /*string msg = $"Toggling '{name}' ";
-            foreach (KeyValuePair<string, NetworkFilter> pair in MoveMore.NetworkFilters)
+            foreach (KeyValuePair<string, NetworkFilter> pair in MITE.NetworkFilters)
             {
                 msg = msg + $"{pair.Key}:({pair.Value.aiType},{pair.Value.enabled}),box:";
                 foreach (UICheckBox cb in UI.NetworkCheckboxes)
@@ -119,7 +119,7 @@ namespace MoveMore
         public static List<string> GetNames()
         {
             List<string> names = new List<string>();
-            foreach (string name in MoveMore.NetworkFilters.Keys)
+            foreach (string name in MITE.NetworkFilters.Keys)
             {
                 names.Add(name);
             }
@@ -129,7 +129,7 @@ namespace MoveMore
 
         public static NetworkFilter GetFilter(Type ai)
         {
-            foreach (NetworkFilter nf in MoveMore.NetworkFilters.Values)
+            foreach (NetworkFilter nf in MITE.NetworkFilters.Values)
             {
                 //Debug.Log($"ai:{ai}, count:{(nf.aiType == null ? 0 : nf.aiType.Count)}");
                 if (nf.aiType != null)
@@ -143,7 +143,7 @@ namespace MoveMore
                     }
                 }
             }
-            return MoveMore.NetworkFilters.GetValueSafe("NF-Other");
+            return MITE.NetworkFilters.GetValueSafe("NF-Other");
         }
     }
 }

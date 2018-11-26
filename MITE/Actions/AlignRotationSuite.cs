@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace MoveMore
+namespace MITE
 {
     public class AlignIndividualAction : AlignRotationAction
     {
@@ -153,7 +153,8 @@ namespace MoveMore
                 }
             }
 
-            MoveMore.AlignMode = MoveMore.AlignModes.Off;
+            MITE.AlignMode = MITE.AlignModes.Off;
+            UI.UpdateAlignTools();
             UpdateArea(bounds);
             UpdateArea(GetTotalBounds(false));
         }

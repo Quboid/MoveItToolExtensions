@@ -1,16 +1,13 @@
 ﻿using ColossalFramework;
 using ColossalFramework.Math;
-using ColossalFramework.UI;
-using ColossalFramework.IO;
-
-using System;
-using System.Collections.Generic;
 using Harmony;
 using MoveIt;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 
-namespace MoveMore
+namespace MITE
 {
     [HarmonyPatch(typeof(MoveItTool))]
     [HarmonyPatch("RaycastHoverInstance")]
@@ -58,7 +55,7 @@ namespace MoveMore
                 selectBuilding = MoveItTool.filterBuildings;
                 selectProps = MoveItTool.filterProps;
                 selectDecals = MoveItTool.filterDecals;
-                selectSurfaces = MoveMore.filterSurfaces;
+                selectSurfaces = MITE.filterSurfaces;
                 selectNodes = MoveItTool.filterNodes;
                 selectSegments = MoveItTool.filterSegments;
                 selectTrees = MoveItTool.filterTrees;
@@ -332,7 +329,7 @@ namespace MoveMore
                             }
                         }
 
-                        if (MoveItTool.filterProps || MoveItTool.filterDecals || MoveMore.filterSurfaces)
+                        if (MoveItTool.filterProps || MoveItTool.filterDecals || MITE.filterSurfaces)
                         {
                             ushort prop = PropManager.instance.m_propGrid[i * 270 + j];
                             int count = 0;

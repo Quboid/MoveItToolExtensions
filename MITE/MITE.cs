@@ -1,20 +1,18 @@
 ﻿using ColossalFramework.IO;
-using ColossalFramework.UI;
 using Harmony;
 using ICities;
 using MoveIt;
-using SamsamTS;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using UnityEngine;
 
-namespace MoveMore
+namespace MITE
 {
-    public class MoveMore : LoadingExtensionBase, IUserMod
+    public class MITE : LoadingExtensionBase, IUserMod
     {
-        public string Name => "Move More!";
+        public string Name => "Move It Tool Extensions";
         public string Description => "Extends Move It with extra tools and filters";
 
         public const MoveItTool.ToolState TOOL_KEY = (MoveItTool.ToolState)6;
@@ -37,9 +35,9 @@ namespace MoveMore
         public static AlignModes AlignMode = AlignModes.Off;
 
         private static bool debugInitialised = false;
-        public static readonly string debugPath = Path.Combine(DataLocation.localApplicationData, "MoveMore.log");
+        public static readonly string debugPath = Path.Combine(DataLocation.localApplicationData, "MITE.log");
 
-        private static readonly string harmonyId = "quboid.csl_mods.csl_movemore";
+        private static readonly string harmonyId = "quboid.csl_mods.csl_mite";
         private static HarmonyInstance harmonyInstance;
         private static readonly object padlock = new object();
 
@@ -55,7 +53,7 @@ namespace MoveMore
         {
             if (!debugInitialised)
             {
-                File.WriteAllText(debugPath, $"Move More! debug log:\n");
+                File.WriteAllText(debugPath, $"MITE debug log:\n");
                 debugInitialised = true;
             }
 
@@ -74,9 +72,9 @@ namespace MoveMore
             {
                 AlignMode = AlignModes.Off;
             }
-            //MoveItTool tool = (MoveItTool)ColossalFramework.Singleton<ToolController>.instance.CurrentTool;
-            ((MoveItTool)ColossalFramework.Singleton<ToolController>.instance.CurrentTool).toolState = MoveItTool.ToolState.Default;
-            UI.UpdateAlignToolsBtn();
+
+            MoveItTool.instance.toolState = MoveItTool.ToolState.Default;
+            UI.UpdateAlignTools();
             MoveIt.Action.UpdateArea(MoveIt.Action.GetTotalBounds(false));
             return false;
         }
@@ -96,7 +94,7 @@ namespace MoveMore
         }
     }
 
-
+    /*
     public class MIAlignThreading : ThreadingExtensionBase
     {
         private bool _processed = false;
@@ -112,9 +110,9 @@ namespace MoveMore
                     _processed = true;
 
                     // Action
-                    if (MoveMore.AlignMode != MoveMore.AlignModes.Off)
+                    if (MITE.AlignMode != MITE.AlignModes.Off)
                     { // Switch Off
-                        MoveMore.DeactivateAlignTool();
+                        MITE.DeactivateAlignTool();
                     }
                     else
                     {
@@ -126,22 +124,22 @@ namespace MoveMore
                         {
                             if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))
                             {
-                                MoveMore.AlignMode = MoveMore.AlignModes.Group;
+                                MITE.AlignMode = MITE.AlignModes.Group;
                             }
                             else if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
                             {
-                                MoveMore.AlignMode = MoveMore.AlignModes.Random;
+                                MITE.AlignMode = MITE.AlignModes.Random;
 
                                 // Perform action immediately
                                 AlignRotationAction action = new AlignRandomAction();
                                 action.followTerrain = MoveItTool.followTerrain;
                                 ActionQueue.instance.Push(action);
                                 ActionQueue.instance.Do();
-                                MoveMore.DeactivateAlignTool();
+                                MITE.DeactivateAlignTool();
                             }
                             else
                             {
-                                MoveMore.AlignMode = MoveMore.AlignModes.Individual;
+                                MITE.AlignMode = MITE.AlignModes.Individual;
                             }
                             if (tool.toolState != MoveItTool.ToolState.AligningHeights)
                             {
@@ -158,5 +156,5 @@ namespace MoveMore
                 }
             }
         }
-    }
+    }*/
 }

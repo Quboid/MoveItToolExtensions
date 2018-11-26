@@ -5,7 +5,7 @@ using System.Reflection;
 
 // Directly from Move It
 
-namespace MoveMore
+namespace MITE
 {
     class ResourceLoader
     {
