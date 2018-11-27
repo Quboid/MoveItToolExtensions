@@ -13,7 +13,7 @@ namespace MITE
     public class MITE : LoadingExtensionBase, IUserMod
     {
         public string Name => "Move It Tool Extensions";
-        public string Description => "Extends Move It with extra tools and filters";
+        public string Description => "Extra tools and filters for Move It!";
 
         public const MoveItTool.ToolState TOOL_KEY = (MoveItTool.ToolState)6;
         public const int TOOL_ACTION_DO = 1;

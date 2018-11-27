@@ -5,18 +5,6 @@ using UnityEngine;
 
 namespace MITE
 {
-    //[HarmonyPatch(typeof(UIToolOptionPanel))]
-    //[HarmonyPatch("RefreshAlignHeightButton")]
-    //class UITOP_RefreshAlignHeightButton
-    //{
-    //    public static void Postfix()
-    //    {
-    //        Debug.Log($"Mode:{MITE.AlignMode}");
-    //        UI.UpdateAlignTools();
-    //    }
-    //}
-
-
     [HarmonyPatch(typeof(UIToolOptionPanel))]
     [HarmonyPatch("Start")]
     class UITOP_Start
@@ -118,6 +106,7 @@ namespace MITE
             };
             checkBox.eventDoubleClick += OnDoubleClick;
 
+            #region Network Filters (disabled)
             void OnDoubleClickNetworkFilter(UIComponent c, UIMouseEventParameter p)
             {
                 foreach (UIComponent comp in filtersPanel.components)
@@ -206,12 +195,13 @@ namespace MITE
                 NetworkFilter.ToggleFilter("NF-Other");
             };
             checkBox.eventDoubleClick += OnDoubleClickNetworkFilter;
+            #endregion
 
             filtersPanel.padding = new RectOffset(10, 10, 10, 10);
             filtersPanel.autoLayoutDirection = LayoutDirection.Vertical;
             filtersPanel.autoLayoutPadding = new RectOffset(0, 0, 0, 5);
             filtersPanel.autoLayout = true;
-            filtersPanel.height = 210;
+            filtersPanel.height = 210; // Without NF enabled: 194;
             filtersPanel.absolutePosition = ___m_marquee.absolutePosition + new Vector3(-57, -5 - filtersPanel.height);
             //Debug.Log($"\n{___m_marquee.absolutePosition}\n{filtersPanel.absolutePosition}");
 
@@ -261,20 +251,18 @@ namespace MITE
 
             alignToolsPanel = __instance.AddUIComponent<UIPanel>();
             UI.AlignToolsPanel = alignToolsPanel;
-            alignToolsPanel.clipChildren = true;
             alignToolsPanel.autoLayout = false;
             alignToolsPanel.size = new Vector2(36, 166);
             alignToolsPanel.isVisible = false;
             alignToolsPanel.absolutePosition = UI.AlignToolsBtn.absolutePosition + new Vector3(0, 10 - alignToolsPanel.height);
-            //alignToolsPanel.zOrder = m_alignTools.zOrder - 10;
             UI.AlignToolsBtn.zOrder = alignToolsPanel.zOrder + 10;
 
             UIPanel atpBackground = alignToolsPanel.AddUIComponent<UIPanel>();
-            atpBackground.atlas = UI.GetIconsAtlas();
-            atpBackground.backgroundSprite = "ColumnBG";
+            atpBackground.size = new Vector2(26, 166);
+            atpBackground.clipChildren = true;
             atpBackground.relativePosition = new Vector3(5, 10);
-            atpBackground.width = atpBackground.parent.width - 10;
-            atpBackground.opacity = 0.8f;
+            atpBackground.atlas = SamsamTS.UIUtils.GetAtlas("Ingame");
+            atpBackground.backgroundSprite = "InfoPanelBack";
 
             UIPanel atpContainer = alignToolsPanel.AddUIComponent<UIPanel>();
             atpContainer.autoLayoutDirection = LayoutDirection.Vertical;

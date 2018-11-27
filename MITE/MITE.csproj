@@ -70,9 +70,6 @@
     <Compile Include="UI_Detours.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Icons\ColumnBG.png" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Icons\AlignRandom.png" />
     <EmbeddedResource Include="Icons\AlignTools.png" />
   </ItemGroup>

@@ -184,8 +184,7 @@ namespace MITE
                 "AlignTools",
                 "AlignIndividual",
                 "AlignGroup",
-                "AlignRandom",
-                "ColumnBG"
+                "AlignRandom"
             };
 
             UITextureAtlas loadedAtlas = ResourceLoader.CreateTextureAtlas("MITE", spriteNames, "MITE.Icons.");
