@@ -1,6 +1,5 @@
 ﻿using Harmony;
 using MoveIt;
-using ColossalFramework.UI;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,11 +8,26 @@ namespace MITE
 {
     class Filters
     {
-        static string[] SurfaceNames = new string[]
+        static readonly string[] SurfaceNames = new string[]
         {
             "ploppablegravel",
             "ploppablecliffgrass",
             "ploppableasphalt-prop"
+        };
+
+        static readonly string[] SurfaceDecalNames = new string[]
+        {
+            "ploppableasphalt-decal"
+        };
+
+        public static Dictionary<string, NetworkFilter> NetworkFilters = new Dictionary<string, NetworkFilter>
+        {
+            { "NF-Roads", new NetworkFilter(true, new List<Type> { typeof(RoadBaseAI) } ) },
+            { "NF-Tracks", new NetworkFilter(true, new List<Type> { typeof(TrainTrackBaseAI), typeof(MonorailTrackAI) } ) },
+            { "NF-Paths", new NetworkFilter(true, new List<Type> { typeof(PedestrianPathAI), typeof(PedestrianTunnelAI), typeof(PedestrianBridgeAI), typeof(PedestrianWayAI) } ) },
+            { "NF-Fences", new NetworkFilter(true, new List<Type> { typeof(DecorationWallAI) } ) },
+            { "NF-Power", new NetworkFilter(true, new List<Type> { typeof(PowerLineAI) } ) },
+            { "NF-Other", new NetworkFilter(true,  null ) }
         };
 
 
@@ -23,17 +37,38 @@ namespace MITE
                 return true;
             }
 
+            if (MITE.Settings.DecalsAsSurfaces && Array.Exists(SurfaceDecalNames, s => s.Equals(info.m_mesh.name)))
+            {
+                return true;
+            }
+
             return false;
         }
 
 
         public static bool Filter(PropInfo info)
         {
+            if (!MoveItTool.marqueeSelection) return true;
+
             if (info.m_isDecal)
             {
-                if (MoveItTool.filterDecals)
+                if (MITE.Settings.DecalsAsSurfaces)
                 {
-                    return true;
+                    if (MITE.filterSurfaces && IsSurface(info))
+                    {
+                        return true;
+                    }
+                    if (MoveItTool.filterDecals && !IsSurface(info))
+                    {
+                        return true;
+                    }
+                }
+                else
+                {
+                    if (MoveItTool.filterDecals)
+                    {
+                        return true;
+                    }
                 }
                 return false;
             }
@@ -92,12 +127,12 @@ namespace MITE
 
         public static void SetFilter(string name, bool e)
         {
-            MITE.NetworkFilters.GetValueSafe(name).enabled = e;
+            Filters.NetworkFilters.GetValueSafe(name).enabled = e;
         }
 
         public static void ToggleFilter(string name)
         {
-            MITE.NetworkFilters.GetValueSafe(name).enabled = !MITE.NetworkFilters.GetValueSafe(name).enabled;
+            Filters.NetworkFilters.GetValueSafe(name).enabled = !Filters.NetworkFilters.GetValueSafe(name).enabled;
 
             /*string msg = $"Toggling '{name}' ";
             foreach (KeyValuePair<string, NetworkFilter> pair in MITE.NetworkFilters)
@@ -119,7 +154,7 @@ namespace MITE
         public static List<string> GetNames()
         {
             List<string> names = new List<string>();
-            foreach (string name in MITE.NetworkFilters.Keys)
+            foreach (string name in Filters.NetworkFilters.Keys)
             {
                 names.Add(name);
             }
@@ -129,7 +164,7 @@ namespace MITE
 
         public static NetworkFilter GetFilter(Type ai)
         {
-            foreach (NetworkFilter nf in MITE.NetworkFilters.Values)
+            foreach (NetworkFilter nf in Filters.NetworkFilters.Values)
             {
                 //Debug.Log($"ai:{ai}, count:{(nf.aiType == null ? 0 : nf.aiType.Count)}");
                 if (nf.aiType != null)
@@ -143,7 +178,7 @@ namespace MITE
                     }
                 }
             }
-            return MITE.NetworkFilters.GetValueSafe("NF-Other");
+            return Filters.NetworkFilters.GetValueSafe("NF-Other");
         }
     }
 }

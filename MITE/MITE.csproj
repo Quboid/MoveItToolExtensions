@@ -66,6 +66,7 @@
     <Compile Include="Moveable\MoveableBuilding.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ResourceLoader.cs" />
+    <Compile Include="Settings.cs" />
     <Compile Include="UI.cs" />
     <Compile Include="UI_Detours.cs" />
   </ItemGroup>
@@ -78,6 +79,14 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Icons\AlignIndividual.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Icons\NFExpand.png" />
+    <EmbeddedResource Include="Icons\NFExpandHover.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Icons\NFCollapse.png" />
+    <EmbeddedResource Include="Icons\NFCollapseHover.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

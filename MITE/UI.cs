@@ -184,7 +184,11 @@ namespace MITE
                 "AlignTools",
                 "AlignIndividual",
                 "AlignGroup",
-                "AlignRandom"
+                "AlignRandom",
+                "NFExpand",
+                "NFExpandHover",
+                "NFCollapse",
+                "NFCollapseHover"
             };
 
             UITextureAtlas loadedAtlas = ResourceLoader.CreateTextureAtlas("MITE", spriteNames, "MITE.Icons.");
@@ -203,13 +207,17 @@ namespace MITE
             ToggleNF.focusedTextColor = TextColor;
             ToggleNF.pressedTextColor = TextColor;
             ToggleNF.autoSize = false;
-            ToggleNF.width = FilterPanel.width - 20f;
+            ToggleNF.width = 130f;
             ToggleNF.height = 16f;
+            ToggleNF.horizontalAlignment = UIHorizontalAlignment.Center;
             ToggleNF.relativePosition = new Vector2(10f, 0f);
+            ToggleNF.atlas = GetIconsAtlas();
             ToggleNF.normalBgSprite = null;
             ToggleNF.hoveredBgSprite = null;
             ToggleNF.pressedBgSprite = null;
             ToggleNF.disabledBgSprite = null;
+            ToggleNF.normalFgSprite = "NFExpand";
+            ToggleNF.hoveredFgSprite = "NFExpandHover";
             ToggleNF.tooltip = "Network Filters";
             ToggleNF.eventClicked += (c, p) =>
             {
@@ -225,15 +233,13 @@ namespace MITE
         {
             if (MITE.filterNetworks)
             { // Network Filters visible
-                ToggleNF.text = "^";
-                ToggleNF.textPadding = new RectOffset(0, 0, 6, 0);
-                ToggleNF.textScale = 0.65f;
+                ToggleNF.normalFgSprite = "NFCollapse";
+                ToggleNF.hoveredFgSprite = "NFCollapseHover";
             }
             else
             { // Network Filters hidden
-                ToggleNF.textPadding = new RectOffset(0, 0, 2, 0);
-                ToggleNF.text = "+";
-                ToggleNF.textScale = 0.8f;
+                ToggleNF.normalFgSprite = "NFExpand";
+                ToggleNF.hoveredFgSprite = "NFExpandHover";
             }
         }
 
@@ -256,7 +262,7 @@ namespace MITE
         public static void ToggleNetworks()
         {
             MITE.filterNetworks = !MITE.filterNetworks;
-            int filterRows = MITE.NetworkFilters.Count;
+            int filterRows = Filters.NetworkFilters.Count;
 
             if (MITE.filterNetworks)
             {

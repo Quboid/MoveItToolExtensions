@@ -14,6 +14,31 @@ namespace MITE
     {
         public string Name => "Move It Tool Extensions";
         public string Description => "Extra tools and filters for Move It!";
+        internal static readonly string settingsFilePath = Path.Combine(DataLocation.localApplicationData, "CSL_MITE.xml");
+
+        private static Settings m_settings;
+        public static Settings Settings
+        {
+            get
+            {
+                if (m_settings == null)
+                {
+                    m_settings = Settings.LoadConfiguration();
+
+                    if (m_settings == null)
+                    {
+                        m_settings = new Settings();
+                        m_settings.SaveConfiguration();
+                    }
+                }
+                return m_settings;
+            }
+        }
+
+        public void OnSettingsUI(UIHelperBase helper)
+        {
+            Settings.OnSettingsUI(helper);
+        }
 
         public const MoveItTool.ToolState TOOL_KEY = (MoveItTool.ToolState)6;
         public const int TOOL_ACTION_DO = 1;
@@ -21,15 +46,6 @@ namespace MITE
 
         public static bool filterSurfaces = true;
         public static bool filterNetworks = false;
-        public static Dictionary<string, NetworkFilter> NetworkFilters = new Dictionary<string, NetworkFilter>
-        {   
-            { "NF-Roads", new NetworkFilter(true, new List<Type> { typeof(RoadBaseAI) } ) },
-            { "NF-Tracks", new NetworkFilter(true, new List<Type> { typeof(TrainTrackBaseAI) } ) },
-            { "NF-Paths", new NetworkFilter(true, new List<Type> { typeof(PedestrianPathAI), typeof(PedestrianTunnelAI), typeof(PedestrianBridgeAI), typeof(PedestrianWayAI) } ) },
-            { "NF-Fences", new NetworkFilter(true, new List<Type> { typeof(DecorationWallAI) } ) },
-            { "NF-Power", new NetworkFilter(true, new List<Type> { typeof(PowerLineAI) } ) },
-            { "NF-Other", new NetworkFilter(true,  null ) }
-        };
 
         public enum AlignModes { Off, Height, Individual, Group, Random };
         public static AlignModes AlignMode = AlignModes.Off;
@@ -93,68 +109,4 @@ namespace MITE
             }
         }
     }
-
-    /*
-    public class MIAlignThreading : ThreadingExtensionBase
-    {
-        private bool _processed = false;
-        private HashSet<InstanceState> m_states = new HashSet<InstanceState>();
-
-        public override void OnUpdate(float realTimeDelta, float simulationTimeDelta)
-        {
-            if (ColossalFramework.Singleton<ToolController>.instance.CurrentTool is MoveItTool tool)
-            {
-                if ((Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt)) && Input.GetKey(KeyCode.A))
-                {
-                    if (_processed) return;
-                    _processed = true;
-
-                    // Action
-                    if (MITE.AlignMode != MITE.AlignModes.Off)
-                    { // Switch Off
-                        MITE.DeactivateAlignTool();
-                    }
-                    else
-                    {
-                        if ((Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) && (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift)))
-                        { // Both Control and Shift are being held
-                            ;
-                        }
-                        else if (MoveIt.Action.selection.Count > 0)
-                        {
-                            if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))
-                            {
-                                MITE.AlignMode = MITE.AlignModes.Group;
-                            }
-                            else if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
-                            {
-                                MITE.AlignMode = MITE.AlignModes.Random;
-
-                                // Perform action immediately
-                                AlignRotationAction action = new AlignRandomAction();
-                                action.followTerrain = MoveItTool.followTerrain;
-                                ActionQueue.instance.Push(action);
-                                ActionQueue.instance.Do();
-                                MITE.DeactivateAlignTool();
-                            }
-                            else
-                            {
-                                MITE.AlignMode = MITE.AlignModes.Individual;
-                            }
-                            if (tool.toolState != MoveItTool.ToolState.AligningHeights)
-                            {
-                                tool.StartAligningHeights();
-                            }
-                        }
-                    }
-
-                    //Debug.Log($"Active:{Mod.active} toolState:{tool.toolState}");
-                }
-                else
-                {
-                    _processed = false;
-                }
-            }
-        }
-    }*/
 }

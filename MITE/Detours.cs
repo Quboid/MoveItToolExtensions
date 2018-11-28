@@ -2,8 +2,6 @@
 using Harmony;
 using MoveIt;
 using ColossalFramework.Math;
-using ColossalFramework.UI;
-using SamsamTS;
 using System;
 using System.Collections.Generic;
 using UnityEngine;

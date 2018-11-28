@@ -201,8 +201,8 @@ namespace MITE
             filtersPanel.autoLayoutDirection = LayoutDirection.Vertical;
             filtersPanel.autoLayoutPadding = new RectOffset(0, 0, 0, 5);
             filtersPanel.autoLayout = true;
-            filtersPanel.height = 210; // Without NF enabled: 194;
-            filtersPanel.absolutePosition = ___m_marquee.absolutePosition + new Vector3(-57, -5 - filtersPanel.height);
+            filtersPanel.height = 210; // Without NF enabled: 188;
+            filtersPanel.absolutePosition = ___m_marquee.absolutePosition + new Vector3(-47, -5 - filtersPanel.height);
             //Debug.Log($"\n{___m_marquee.absolutePosition}\n{filtersPanel.absolutePosition}");
 
             ___m_marquee.eventDoubleClick += (UIComponent c, UIMouseEventParameter p) =>
@@ -252,6 +252,7 @@ namespace MITE
             alignToolsPanel = __instance.AddUIComponent<UIPanel>();
             UI.AlignToolsPanel = alignToolsPanel;
             alignToolsPanel.autoLayout = false;
+            alignToolsPanel.clipChildren = true;
             alignToolsPanel.size = new Vector2(36, 166);
             alignToolsPanel.isVisible = false;
             alignToolsPanel.absolutePosition = UI.AlignToolsBtn.absolutePosition + new Vector3(0, 10 - alignToolsPanel.height);
