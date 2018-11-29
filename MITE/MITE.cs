@@ -2,6 +2,8 @@
 using Harmony;
 using ICities;
 using MoveIt;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using UnityEngine;
@@ -12,7 +14,7 @@ namespace MITE
     {
         public string Name => "Move It Tool Extensions";
         public string Description => "Extra tools and filters for Move It!";
-        internal static readonly string settingsFilePath = Path.Combine(DataLocation.localApplicationData, "CSL_MITE.xml");
+        internal static readonly string settingsFilePath = Path.Combine(DataLocation.localApplicationData, "MITE.xml");
 
         private static Settings m_settings;
         public static Settings Settings

@@ -20,22 +20,22 @@ namespace MITE
             "ploppableasphalt-decal"
         };
 
-        static readonly string[] SurfaceDeczaahNames = new string[]
+        static readonly string[] SurfaceExtraNames = new string[]
         {
-            "999653286.Ploppable"
-        };
-        static readonly string[] SurfaceDockNames = new string[]
-        {
-            "1136492728.R69 Docks"
+            "1136492728.R69 Docks", "999653286.Ploppable"
         };
         static readonly string[] SurfaceBrushNames = new string[]
         {
-            "418194210", "416836974", "416837329", "416837674", "416916315", "416924392", // Agriculture
-            "418187161", "416103351", "423541340", "416107948", "416109689", "416916560", "416924629", // Concrete
-            "416106438", "416108293", "416110102", "416917279", "416924830", "416924830", // Gravel
-            "418188094", "416107568", "422323255", "416109334", "416111243", "416917700", "416925008", // Ruined
-            "418188427", "418188861", "418415108", // Tiled
-            "418187791", "418188652", "418414886" // Marble
+            "418194210.", "416836974.", "416837329.", "416837674.", "416916315.", "416924392.", // Agriculture
+            "418187161.", "416103351.", "423541340.", "416107948.", "416109689.", "416916560.", "416924629.", // Concrete
+            "416106438.", "416108293.", "416110102.", "416917279.", "416924830.", "416924830.", // Gravel
+            "418188094.", "416107568.", "422323255.", "416109334.", "416111243.", "416917700.", "416925008.", // Ruined
+            "418188427.", "418188861.", "418415108.", // Tiled
+            "418187791.", "418188652.", "418414886." // Marble
+        };
+        static readonly string[] PillarClassNames = new string[]
+        {
+            "Highway", "Electricity Wire", "Electricity Facility", "Pedestrian Path", "Train Track", "Monorail Track", "CableCar Facility"
         };
 
         public static Dictionary<string, NetworkFilter> NetworkFilters = new Dictionary<string, NetworkFilter>
@@ -146,21 +146,9 @@ namespace MITE
 
         public static bool IsSurface(BuildingInfo info)
         {
-            if (MITE.Settings.DocksAsSurfaces)
+            if (MITE.Settings.ExtraAsSurfaces)
             {
-                foreach (string subname in SurfaceDockNames)
-                {
-                    if (subname.Length > info.name.Length) continue;
-                    if (subname == info.name.Substring(0, subname.Length))
-                    {
-                        return true;
-                    }
-                }
-            }
-
-            if (MITE.Settings.DeczaahAsSurfaces)
-            {
-                foreach (string subname in SurfaceDeczaahNames)
+                foreach (string subname in SurfaceExtraNames)
                 {
                     if (subname.Length > info.name.Length) continue;
                     if (subname == info.name.Substring(0, subname.Length))
@@ -196,9 +184,9 @@ namespace MITE
                 return true;
             }
 
-            if (MITE.Settings.DeczaahAsSurfaces)
+            if (MITE.Settings.ExtraAsSurfaces)
             {
-                foreach (string subname in SurfaceDeczaahNames)
+                foreach (string subname in SurfaceExtraNames)
                 {
                     if (subname.Length > info.name.Length) continue;
                     if (subname == info.name.Substring(0, subname.Length))
@@ -211,6 +199,30 @@ namespace MITE
             return false;
         }
 
+
+        public static bool Filter(BuildingInfo info)
+        {
+            if (IsSurface(info)) {
+                if (MITE.filterSurfaces) return true;
+                else return false;
+            }
+
+            if (MoveItTool.filterBuildings)
+            {
+                if (MITE.Settings.PillarsAsNotBuildings)
+                {
+                    // Filter out pylons and pillars
+                    Debug.Log($"m_class.name:{info.m_class.name}");
+                    if (Array.Exists(PillarClassNames, s => s.Equals(info.m_class.name)))
+                    {
+                        return false;
+                    }
+                    return true;
+                }
+                return true;
+            }
+            return false;
+        }
 
         public static bool Filter(PropInfo info)
         {

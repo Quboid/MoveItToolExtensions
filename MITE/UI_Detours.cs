@@ -64,7 +64,7 @@ namespace MITE
 
 
             #region Network Filters
-            UIButton btnNetworks = UI.CreateToggleNF();
+            UIButton btnNetworks = UI.CreateToggleNFBtn();
             void OnDoubleClickNetworkFilter(UIComponent c, UIMouseEventParameter p)
             {
                 foreach (UICheckBox cb in UI.NetworkCBs)

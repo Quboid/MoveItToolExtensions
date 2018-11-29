@@ -77,8 +77,8 @@ namespace MITE
                             {
                                 //Debug.Log($"Building:{building}");
 
-                                bool isSurface = Filters.IsSurface(buildingBuffer[building].Info);
-                                if ((isSurface && selectSurfaces) || (!isSurface && selectBuilding)) {
+                                if (Filters.Filter(buildingBuffer[building].Info))
+                                {
                                     id.Building = Building.FindParentBuilding(building);
                                     if (id.Building == 0) id.Building = building;
                                     smallestDist = t;
@@ -319,8 +319,7 @@ namespace MITE
                                 //Debug.Log($"Building:{building}");
                                 if (Detour_Utils.IsBuildingValid(ref buildingBuffer[building], itemLayers) && _MIT.Method("PointInRectangle", m_selection, buildingBuffer[building].m_position).GetValue<bool>())
                                 {
-                                    bool isSurface = Filters.IsSurface(buildingBuffer[building].Info);
-                                    if ((isSurface && MITE.filterSurfaces) || (!isSurface && MoveItTool.filterBuildings))
+                                    if (Filters.Filter(buildingBuffer[building].Info))
                                     {
                                         id.Building = Building.FindParentBuilding(building);
                                         if (id.Building == 0) id.Building = building;

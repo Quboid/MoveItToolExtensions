@@ -15,7 +15,7 @@ namespace MITE
         public static Dictionary<string, UIButton> AlignButtons = new Dictionary<string, UIButton>();
         public static Color32 TextColor = new Color32(175, 216, 235, 255);
         public static Color32 ActiveLabelColor = new Color32(255, 255, 255, 255);
-        public static Color32 InactiveLabelColor = new Color32(190, 190, 195, 255);
+        public static Color32 InactiveLabelColor = new Color32(170, 170, 175, 255);
 
         public static void AlignToolsClicked(UIComponent c, UIMouseEventParameter p)
         {
@@ -190,7 +190,7 @@ namespace MITE
         }
 
 
-        public static UIButton CreateToggleNF()
+        public static UIButton CreateToggleNFBtn()
         {
             ToggleNF = SamsamTS.UIUtils.CreateButton(FilterPanel);
             ToggleNF.textHorizontalAlignment = UIHorizontalAlignment.Center;
@@ -218,6 +218,20 @@ namespace MITE
 
             _updateToggleNFBtn();
             return ToggleNF;
+        }
+
+        private static void _updateToggleNFBtn()
+        {
+            if (MITE.filterNetworks)
+            { // Network Filters visible
+                ToggleNF.normalFgSprite = "NFCollapse";
+                ToggleNF.hoveredFgSprite = "NFCollapseHover";
+            }
+            else
+            { // Network Filters hidden
+                ToggleNF.normalFgSprite = "NFExpand";
+                ToggleNF.hoveredFgSprite = "NFExpandHover";
+            }
         }
 
 
@@ -264,36 +278,6 @@ namespace MITE
             }
 
             RefreshFilters();
-        }
-
-
-        private static void _updateToggleNFBtn()
-        {
-            if (MITE.filterNetworks)
-            { // Network Filters visible
-                ToggleNF.normalFgSprite = "NFCollapse";
-                ToggleNF.hoveredFgSprite = "NFCollapseHover";
-            }
-            else
-            { // Network Filters hidden
-                ToggleNF.normalFgSprite = "NFExpand";
-                ToggleNF.hoveredFgSprite = "NFExpandHover";
-            }
-        }
-
-
-        public static UILabel CreateSeparator(UIComponent parent, float height)
-        {
-            UILabel separator;
-            separator = parent.AddUIComponent<UILabel>();
-            separator.relativePosition = new Vector3(22f, 2f);
-            separator.size = new Vector2(90f, height);
-            separator.height = height;
-            separator.padding = new RectOffset(0, 0, 0, 0);
-            separator.color = new Color32(255, 255, 255, 200);
-            separator.autoHeight = false;
-            separator.autoSize = false;
-            return separator;
         }
 
 

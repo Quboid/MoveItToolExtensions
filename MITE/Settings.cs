@@ -10,9 +10,10 @@ namespace MITE
     public class Settings
     {
         public bool DecalsAsSurfaces = true;
-        public bool DeczaahAsSurfaces = true;
+        public bool ExtraAsSurfaces = true;
         public bool DocksAsSurfaces = true;
         public bool BrushesAsSurfaces = true;
+        public bool PillarsAsNotBuildings = true;
 
         public Settings() { }
         public void OnPreSerialize() { }
@@ -54,25 +55,27 @@ namespace MITE
         {
             helper.AddSpace(20);
             UICheckBox cb;
-            UIHelperBase group = helper.AddGroup("Recognise as surfaces");
+            UIHelperBase group = helper.AddGroup("Recognise as surfaces:");
             cb = (UICheckBox)group.AddCheckbox("Ploppable asphalt decals", MITE.Settings.DecalsAsSurfaces, (i) =>
             {
                 MITE.Settings.DecalsAsSurfaces = i;
                 SaveConfiguration();
             });
-            cb = (UICheckBox)group.AddCheckbox("Deczaah's Surface Pack", MITE.Settings.DeczaahAsSurfaces, (i) =>
-            {
-                MITE.Settings.DeczaahAsSurfaces = i;
-                SaveConfiguration();
-            });
-            cb = (UICheckBox)group.AddCheckbox("Ronyx69's Dock Pack", MITE.Settings.DocksAsSurfaces, (i) =>
-            {
-                MITE.Settings.DocksAsSurfaces = i;
-                SaveConfiguration();
-            });
             cb = (UICheckBox)group.AddCheckbox("[RWB] FxUK's Brushes", MITE.Settings.BrushesAsSurfaces, (i) =>
             {
                 MITE.Settings.BrushesAsSurfaces = i;
+                SaveConfiguration();
+            });
+            cb = (UICheckBox)group.AddCheckbox("Extras: Ronyx69's Docks, Deczaah's Surfaces", MITE.Settings.ExtraAsSurfaces, (i) =>
+            {
+                MITE.Settings.ExtraAsSurfaces = i;
+                SaveConfiguration();
+            });
+            helper.AddSpace(20);
+            group = helper.AddGroup("Hide from selection:");
+            cb = (UICheckBox)group.AddCheckbox("Pylons and network pillars\n(Will still be moved/deleted with attached node)", MITE.Settings.PillarsAsNotBuildings, (i) =>
+            {
+                MITE.Settings.PillarsAsNotBuildings = i;
                 SaveConfiguration();
             });
             helper.AddSpace(20);
