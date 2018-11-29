@@ -1,5 +1,4 @@
-﻿
-using ColossalFramework.UI;
+﻿using ColossalFramework.UI;
 using ICities;
 using System;
 using System.IO;
@@ -10,8 +9,10 @@ namespace MITE
 {
     public class Settings
     {
-        public bool DecalsAsSurfaces;
-        public bool TinySegments;
+        public bool DecalsAsSurfaces = true;
+        public bool DeczaahAsSurfaces = true;
+        public bool DocksAsSurfaces = true;
+        public bool BrushesAsSurfaces = true;
 
         public Settings() { }
         public void OnPreSerialize() { }
@@ -52,10 +53,26 @@ namespace MITE
         public void OnSettingsUI(UIHelperBase helper)
         {
             helper.AddSpace(20);
-            UIHelperBase group = helper.AddGroup("More It Tool Extensions");
-            UICheckBox CBdecal = (UICheckBox)group.AddCheckbox("Filter ploppable asphalt decals as surfaces", MITE.Settings.DecalsAsSurfaces, (i) =>
+            UICheckBox cb;
+            UIHelperBase group = helper.AddGroup("Recognise as surfaces");
+            cb = (UICheckBox)group.AddCheckbox("Ploppable asphalt decals", MITE.Settings.DecalsAsSurfaces, (i) =>
             {
                 MITE.Settings.DecalsAsSurfaces = i;
+                SaveConfiguration();
+            });
+            cb = (UICheckBox)group.AddCheckbox("Deczaah's Surface Pack", MITE.Settings.DeczaahAsSurfaces, (i) =>
+            {
+                MITE.Settings.DeczaahAsSurfaces = i;
+                SaveConfiguration();
+            });
+            cb = (UICheckBox)group.AddCheckbox("Ronyx69's Dock Pack", MITE.Settings.DocksAsSurfaces, (i) =>
+            {
+                MITE.Settings.DocksAsSurfaces = i;
+                SaveConfiguration();
+            });
+            cb = (UICheckBox)group.AddCheckbox("[RWB] FxUK's Brushes", MITE.Settings.BrushesAsSurfaces, (i) =>
+            {
+                MITE.Settings.BrushesAsSurfaces = i;
                 SaveConfiguration();
             });
             helper.AddSpace(20);

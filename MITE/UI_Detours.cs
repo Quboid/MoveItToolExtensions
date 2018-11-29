@@ -30,206 +30,120 @@ namespace MITE
 
             void OnDoubleClick(UIComponent c, UIMouseEventParameter p)
             {
-                foreach (UIComponent comp in filtersPanel.components)
+                foreach (UICheckBox cb in UI.FilterCBs)
                 {
-                    UICheckBox box = comp as UICheckBox;
-                    if (box != null)
-                    {
-                        if (NetworkFilter.GetNames().Exists(n => n.Equals(box.name))) continue;
-                        if (box != c) box.isChecked = false;
-                    }
+                    cb.isChecked = false;
+                    Filters.SetFilter(cb.name, false);
                 }
-
                 ((UICheckBox)c).isChecked = true;
+                Filters.SetFilter(c.name, true);
+
+                UI.RefreshFilters();
             }
 
-            UICheckBox checkBox = SamsamTS.UIUtils.CreateCheckBox(filtersPanel);
-            checkBox.label.text = "Buildings";
-            checkBox.isChecked = true;
-            checkBox.eventCheckChanged += (c, p) =>
-            {
-                MoveItTool.filterBuildings = p;
-            };
+            UICheckBox checkBox = UI.CreateFilterCB(filtersPanel, "Buildings");
             checkBox.eventDoubleClick += OnDoubleClick;
 
-            checkBox = SamsamTS.UIUtils.CreateCheckBox(filtersPanel);
-            checkBox.label.text = "Props";
-            checkBox.isChecked = true;
-            checkBox.eventCheckChanged += (c, p) =>
-            {
-                MoveItTool.filterProps = p;
-            };
+            checkBox = UI.CreateFilterCB(filtersPanel, "Props");
             checkBox.eventDoubleClick += OnDoubleClick;
 
-            checkBox = SamsamTS.UIUtils.CreateCheckBox(filtersPanel);
-            checkBox.label.text = "Decals";
-            checkBox.isChecked = true;
-            checkBox.eventCheckChanged += (c, p) =>
-            {
-                MoveItTool.filterDecals = p;
-            };
+            checkBox = UI.CreateFilterCB(filtersPanel, "Decals");
             checkBox.eventDoubleClick += OnDoubleClick;
 
-            checkBox = SamsamTS.UIUtils.CreateCheckBox(filtersPanel);
-            checkBox.label.text = "Surfaces";
-            checkBox.isChecked = true;
-            checkBox.eventCheckChanged += (c, p) =>
-            {
-                MITE.filterSurfaces = p;
-            };
+            checkBox = UI.CreateFilterCB(filtersPanel, "Surfaces");
+            checkBox.eventDoubleClick += OnDoubleClick;;
+
+            checkBox = UI.CreateFilterCB(filtersPanel, "Trees");
             checkBox.eventDoubleClick += OnDoubleClick;
 
-            checkBox = SamsamTS.UIUtils.CreateCheckBox(filtersPanel);
-            checkBox.label.text = "Trees";
-            checkBox.isChecked = true;
-            checkBox.eventCheckChanged += (c, p) =>
-            {
-                MoveItTool.filterTrees = p;
-            };
+            checkBox = UI.CreateFilterCB(filtersPanel, "Nodes");
             checkBox.eventDoubleClick += OnDoubleClick;
 
-            checkBox = SamsamTS.UIUtils.CreateCheckBox(filtersPanel);
-            checkBox.label.text = "Nodes";
-            checkBox.isChecked = true;
-            checkBox.eventCheckChanged += (c, p) =>
-            {
-                MoveItTool.filterNodes = p;
-            };
+            checkBox = UI.CreateFilterCB(filtersPanel, "Segments");
             checkBox.eventDoubleClick += OnDoubleClick;
 
-            checkBox = SamsamTS.UIUtils.CreateCheckBox(filtersPanel);
-            checkBox.label.text = "Segments";
-            checkBox.isChecked = true;
-            checkBox.eventCheckChanged += (c, p) =>
-            {
-                MoveItTool.filterSegments = p;
-            };
-            checkBox.eventDoubleClick += OnDoubleClick;
 
-            #region Network Filters (disabled)
+            #region Network Filters
+            UIButton btnNetworks = UI.CreateToggleNF();
             void OnDoubleClickNetworkFilter(UIComponent c, UIMouseEventParameter p)
             {
-                foreach (UIComponent comp in filtersPanel.components)
+                foreach (UICheckBox cb in UI.NetworkCBs)
                 {
-                    UICheckBox box = comp as UICheckBox;
-                    if (box != null)
-                    {
-                        if (!NetworkFilter.GetNames().Exists(n => n.Equals(box.name))) continue;
-                        if (box != c) box.isChecked = false;
-                    }
+                    cb.isChecked = false;
+                    Filters.SetNetworkFilter(cb.name, false);
                 }
-
                 ((UICheckBox)c).isChecked = true;
+                Filters.SetNetworkFilter(c.name, true);
+
+                UI.RefreshFilters();
             }
 
-            UIButton btnNetworks = UI.CreateToggleNF();
-
-            checkBox = SamsamTS.UIUtils.CreateCheckBox(filtersPanel);
-            checkBox.label.text = "Roads";
-            checkBox.name = "NF-Roads";
-            checkBox.isChecked = true;
-            checkBox.isVisible = false;
-            UI.NetworkCheckboxes.Add(checkBox);
-            checkBox.eventCheckChanged += (c, p) =>
-            {
-                NetworkFilter.ToggleFilter("NF-Roads");
-            };
+            checkBox = UI.CreateNetworkFilterCB(filtersPanel, "Roads");
             checkBox.eventDoubleClick += OnDoubleClickNetworkFilter;
 
-            checkBox = SamsamTS.UIUtils.CreateCheckBox(filtersPanel);
-            checkBox.label.text = "Tracks";
-            checkBox.name = "NF-Tracks";
-            checkBox.isChecked = true;
-            checkBox.isVisible = false;
-            UI.NetworkCheckboxes.Add(checkBox);
-            checkBox.eventCheckChanged += (c, p) =>
-            {
-                NetworkFilter.ToggleFilter("NF-Tracks");
-            };
+            checkBox = UI.CreateNetworkFilterCB(filtersPanel, "Tracks");
             checkBox.eventDoubleClick += OnDoubleClickNetworkFilter;
 
-            checkBox = SamsamTS.UIUtils.CreateCheckBox(filtersPanel);
-            checkBox.label.text = "Paths";
-            checkBox.name = "NF-Paths";
-            checkBox.isChecked = true;
-            checkBox.isVisible = false;
-            UI.NetworkCheckboxes.Add(checkBox);
-            checkBox.eventCheckChanged += (c, p) =>
-            {
-                NetworkFilter.ToggleFilter("NF-Paths");
-            };
+            checkBox = UI.CreateNetworkFilterCB(filtersPanel, "Paths");
             checkBox.eventDoubleClick += OnDoubleClickNetworkFilter;
 
-            checkBox = SamsamTS.UIUtils.CreateCheckBox(filtersPanel);
-            checkBox.label.text = "Fences";
-            checkBox.name = "NF-Fences";
-            checkBox.isChecked = true;
-            checkBox.isVisible = false;
-            UI.NetworkCheckboxes.Add(checkBox);
-            checkBox.eventCheckChanged += (c, p) =>
-            {
-                NetworkFilter.ToggleFilter("NF-Fences");
-            };
+            checkBox = UI.CreateNetworkFilterCB(filtersPanel, "Fences");
             checkBox.eventDoubleClick += OnDoubleClickNetworkFilter;
 
-            checkBox = SamsamTS.UIUtils.CreateCheckBox(filtersPanel);
-            checkBox.label.text = "Powerlines";
-            checkBox.name = "NF-Power";
-            checkBox.isChecked = true;
-            checkBox.isVisible = false;
-            UI.NetworkCheckboxes.Add(checkBox);
-            checkBox.eventCheckChanged += (c, p) =>
-            {
-                NetworkFilter.ToggleFilter("NF-Power");
-            };
+            checkBox = UI.CreateNetworkFilterCB(filtersPanel, "Powerlines");
             checkBox.eventDoubleClick += OnDoubleClickNetworkFilter;
 
-            checkBox = SamsamTS.UIUtils.CreateCheckBox(filtersPanel);
-            checkBox.label.text = "Others";
-            checkBox.name = "NF-Other";
-            checkBox.isChecked = true;
-            checkBox.isVisible = false;
-            UI.NetworkCheckboxes.Add(checkBox);
-            checkBox.eventCheckChanged += (c, p) =>
-            {
-                NetworkFilter.ToggleFilter("NF-Other");
-            };
+            checkBox = UI.CreateNetworkFilterCB(filtersPanel, "Others");
             checkBox.eventDoubleClick += OnDoubleClickNetworkFilter;
+
+            UI.RefreshFilters();
             #endregion
 
             filtersPanel.padding = new RectOffset(10, 10, 10, 10);
             filtersPanel.autoLayoutDirection = LayoutDirection.Vertical;
             filtersPanel.autoLayoutPadding = new RectOffset(0, 0, 0, 5);
             filtersPanel.autoLayout = true;
-            filtersPanel.height = 210; // Without NF enabled: 188;
+            filtersPanel.height = 210;
             filtersPanel.absolutePosition = ___m_marquee.absolutePosition + new Vector3(-47, -5 - filtersPanel.height);
-            //Debug.Log($"\n{___m_marquee.absolutePosition}\n{filtersPanel.absolutePosition}");
+            #endregion
 
             ___m_marquee.eventDoubleClick += (UIComponent c, UIMouseEventParameter p) =>
             {
-                int u = 0;
-                bool v = false;
-                foreach (UIComponent comp in filtersPanel.components)
+                bool newChecked = false;
+                foreach (UICheckBox cb in UI.FilterCBs)
                 {
-                    UICheckBox box = comp as UICheckBox;
-                    if (box != null)
+                    if (!cb.isChecked)
                     {
-                        if (box.isChecked == false)
-                            u++;
+                        newChecked = true;
+                        break;
                     }
                 }
-                if (u > 0) v = true;
-                foreach (UIComponent comp in filtersPanel.components)
+                if (!newChecked)
                 {
-                    UICheckBox box = comp as UICheckBox;
-                    if (box != null)
+                    foreach (UICheckBox cb in UI.NetworkCBs)
                     {
-                        box.isChecked = v;
+                        if (!cb.isChecked)
+                        {
+                            newChecked = true;
+                            break;
+                        }
                     }
                 }
-            };
-            #endregion
 
+
+                foreach (UICheckBox cb in UI.FilterCBs)
+                {
+                    cb.isChecked = newChecked;
+                    Filters.SetFilter(cb.name, newChecked);
+                }
+                foreach (UICheckBox cb in UI.NetworkCBs)
+                {
+                    cb.isChecked = newChecked;
+                    Filters.SetNetworkFilter(cb.name, newChecked);
+                }
+
+                UI.RefreshFilters();
+            };
 
             UI.AlignToolsBtn = __instance.AddUIComponent<UIButton>();
             #region AlignTool Panel

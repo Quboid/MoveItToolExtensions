@@ -196,6 +196,7 @@ namespace MITE
 
 
     /* Move It! sub-sub-building fix */
+    #region
 
     [HarmonyPatch(typeof(MoveableBuilding))]
     [HarmonyPatch("GetState")]
@@ -290,4 +291,5 @@ namespace MITE
             }
         }
     }
+    #endregion
 }

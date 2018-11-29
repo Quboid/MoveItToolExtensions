@@ -8,23 +8,23 @@ namespace MITE
 {
     class UI
     {
-        public static List<UICheckBox> NetworkCheckboxes = new List<UICheckBox>();
+        public static List<UICheckBox> NetworkCBs = new List<UICheckBox>();
+        public static List<UICheckBox> FilterCBs = new List<UICheckBox>();
         public static UIButton ToggleNF, AlignToolsBtn;
         public static UIPanel FilterPanel, AlignToolsPanel;
         public static Dictionary<string, UIButton> AlignButtons = new Dictionary<string, UIButton>();
         public static Color32 TextColor = new Color32(175, 216, 235, 255);
+        public static Color32 ActiveLabelColor = new Color32(255, 255, 255, 255);
+        public static Color32 InactiveLabelColor = new Color32(190, 190, 195, 255);
 
         public static void AlignToolsClicked(UIComponent c, UIMouseEventParameter p)
         {
             switch (c.name)
             {
                 case "AlignToolsBtn":
-                    //MITE.AlignMode = MITE.AlignModes.Off;
-
                     if (AlignToolsPanel.isVisible)
                     {
                         AlignToolsPanel.isVisible = false;
-                        //MITE.AlignMode = MITE.AlignModes.Off;
                     }
                     else
                     {
@@ -47,7 +47,6 @@ namespace MITE
                             MITE.AlignMode = MITE.AlignModes.Height;
                         }
                     }
-                    //AlignToolsPanel.isVisible = false;
                     UpdateAlignTools();
                     break;
 
@@ -68,7 +67,6 @@ namespace MITE
                             MITE.AlignMode = MITE.AlignModes.Individual;
                         }
                     }
-                    //AlignToolsPanel.isVisible = false;
                     UpdateAlignTools();
                     break;
 
@@ -89,7 +87,6 @@ namespace MITE
                             MITE.AlignMode = MITE.AlignModes.Group;
                         }
                     }
-                    //AlignToolsPanel.isVisible = false;
                     UpdateAlignTools();
                     break;
 
@@ -106,8 +103,6 @@ namespace MITE
                     ActionQueue.instance.Push(action);
                     ActionQueue.instance.Do();
                     MITE.DeactivateAlignTool();
-
-                    //AlignToolsPanel.isVisible = false;
                     UpdateAlignTools();
                     break;
             }
@@ -117,15 +112,12 @@ namespace MITE
 
         public static void UpdateAlignTools()
         {
-            //string msg = "";
             AlignToolsBtn.atlas = AlignButtons.GetValueSafe("AlignGroup").atlas;
             AlignToolsBtn.normalFgSprite = "AlignTools";
             foreach (UIButton btn in AlignButtons.Values)
             {
-                //msg = msg + $"\n{btn.name} ({MITE.AlignMode},{MoveItTool.instance.toolState})";
                 btn.normalBgSprite = "OptionBase";
             }
-            //Debug.Log(msg);
 
             switch (MITE.AlignMode)
             {
@@ -221,15 +213,61 @@ namespace MITE
             ToggleNF.tooltip = "Network Filters";
             ToggleNF.eventClicked += (c, p) =>
             {
-                ToggleNetworks();
+                ToggleNetworkFiltersPanel();
             };
 
-            _updateToggleNF();
+            _updateToggleNFBtn();
             return ToggleNF;
         }
 
 
-        private static void _updateToggleNF()
+        public static void ToggleNetworkFiltersPanel()
+        {
+            MITE.filterNetworks = !MITE.filterNetworks;
+            int filterRows = Filters.NetworkFilters.Count;
+
+            if (MITE.filterNetworks)
+            {
+                foreach (UICheckBox cb in NetworkCBs)
+                {
+                    if (cb != null)
+                    {
+                        cb.isVisible = true;
+                    }
+                    else
+                    {
+                        Debug.Log($"On - CB is null");
+                    }
+                }
+
+                FilterPanel.height += MITE.UI_FILTER_CB_HEIGHT * filterRows;
+                FilterPanel.absolutePosition += new Vector3(0f, 0 - (MITE.UI_FILTER_CB_HEIGHT * filterRows));
+                _updateToggleNFBtn();
+            }
+            else
+            {
+                foreach (UICheckBox cb in NetworkCBs)
+                {
+                    if (cb != null)
+                    {
+                        cb.isVisible = false;
+                    }
+                    else
+                    {
+                        Debug.Log($"Off - CB is null");
+                    }
+                }
+
+                FilterPanel.height -= MITE.UI_FILTER_CB_HEIGHT * filterRows;
+                FilterPanel.absolutePosition -= new Vector3(0f, 0 - (MITE.UI_FILTER_CB_HEIGHT * filterRows));
+                _updateToggleNFBtn();
+            }
+
+            RefreshFilters();
+        }
+
+
+        private static void _updateToggleNFBtn()
         {
             if (MITE.filterNetworks)
             { // Network Filters visible
@@ -259,48 +297,82 @@ namespace MITE
         }
 
 
-        public static void ToggleNetworks()
+        public static UICheckBox CreateFilterCB(UIComponent parent, string name, string label = null)
         {
-            MITE.filterNetworks = !MITE.filterNetworks;
-            int filterRows = Filters.NetworkFilters.Count;
-
-            if (MITE.filterNetworks)
+            UICheckBox checkBox = _createFilterCB(parent, name, label);
+            checkBox.isVisible = true;
+            checkBox.eventClicked += (c, p) =>
             {
-                foreach (UICheckBox cb in NetworkCheckboxes)
-                {
-                    if (cb != null)
-                    {
-                        cb.isVisible = true;
-                    }
-                    else
-                    {
-                        Debug.Log($"On - CB is null");
-                    }
-                }
+                Filters.ToggleFilter(name);
+                UI.RefreshFilters();
+            };
+            FilterCBs.Add(checkBox);
+            return checkBox;
+        }
 
-                FilterPanel.height += MITE.UI_FILTER_CB_HEIGHT * filterRows;
-                FilterPanel.absolutePosition += new Vector3(0f, 0 - (MITE.UI_FILTER_CB_HEIGHT * filterRows));
-                _updateToggleNF();
+        public static UICheckBox CreateNetworkFilterCB(UIComponent parent, string name, string label = null)
+        {
+            UICheckBox checkBox = _createFilterCB(parent, name, label);
+            checkBox.isVisible = false;
+            checkBox.eventClicked += (c, p) =>
+            {
+                Filters.ToggleNetworkFilter(name);
+                UI.RefreshFilters();
+            };
+            NetworkCBs.Add(checkBox);
+            return checkBox;
+        }
+
+        private static UICheckBox _createFilterCB(UIComponent parent, string name, string label)
+        {
+            if (label == null) label = name;
+            UICheckBox checkBox = SamsamTS.UIUtils.CreateCheckBox(parent);
+            checkBox.label.text = label;
+            checkBox.name = name;
+            checkBox.isChecked = true;
+            return checkBox;
+        }
+
+
+        public static void RefreshFilters()
+        {
+            UICheckBox cbNodes = FilterPanel.Find<UICheckBox>("Nodes");
+            UICheckBox cbSegments = FilterPanel.Find<UICheckBox>("Segments");
+
+            if (MoveItTool.filterNodes || MoveItTool.filterSegments)
+            {
+                foreach (UICheckBox cb in NetworkCBs)
+                {
+                    cb.label.textColor = ActiveLabelColor;
+                }
             }
             else
             {
-                foreach (UICheckBox cb in NetworkCheckboxes)
+                foreach (UICheckBox cb in NetworkCBs)
                 {
-                    if (cb != null)
-                    {
-                        cb.isVisible = false;
-                    }
-                    else
-                    {
-                        Debug.Log($"Off - CB is null");
-                    }
+                    cb.label.textColor = InactiveLabelColor;
                 }
-
-                FilterPanel.height -= MITE.UI_FILTER_CB_HEIGHT * filterRows;
-                FilterPanel.absolutePosition -= new Vector3(0f, 0 - (MITE.UI_FILTER_CB_HEIGHT * filterRows));
-                _updateToggleNF();
             }
 
+            cbNodes.label.textColor = ActiveLabelColor;
+            cbSegments.label.textColor = ActiveLabelColor;
+            if (MITE.filterNetworks)
+            {
+                bool active = false;
+                foreach (NetworkFilter nf in Filters.NetworkFilters.Values)
+                {
+                    if (nf.enabled)
+                    {
+                        active = true;
+                        break;
+                    }
+                }
+                if (!active)
+                {
+                    cbNodes.label.textColor = InactiveLabelColor;
+                    cbSegments.label.textColor = InactiveLabelColor;
+                }
+            }
         }
     }
 }

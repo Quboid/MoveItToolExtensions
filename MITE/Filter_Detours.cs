@@ -67,7 +67,7 @@ namespace MITE
             {
                 for (int j = gridMinX; j <= gridMaxX; j++)
                 {
-                    if (selectBuilding)
+                    if (selectBuilding || selectSurfaces)
                     {
                         ushort building = BuildingManager.instance.m_buildingGrid[i * 270 + j];
                         int count = 0;
@@ -76,9 +76,13 @@ namespace MITE
                             if (Detour_Utils.IsBuildingValid(ref buildingBuffer[building], itemLayers) && buildingBuffer[building].RayCast(building, ray, out float t) && t < smallestDist)
                             {
                                 //Debug.Log($"Building:{building}");
-                                id.Building = Building.FindParentBuilding(building);
-                                if (id.Building == 0) id.Building = building;
-                                smallestDist = t;
+
+                                bool isSurface = Filters.IsSurface(buildingBuffer[building].Info);
+                                if ((isSurface && selectSurfaces) || (!isSurface && selectBuilding)) {
+                                    id.Building = Building.FindParentBuilding(building);
+                                    if (id.Building == 0) id.Building = building;
+                                    smallestDist = t;
+                                }
                             }
                             building = buildingBuffer[building].m_nextGridBuilding;
 
@@ -306,7 +310,7 @@ namespace MITE
                 {
                     for (int j = gridMinX; j <= gridMaxX; j++)
                     {
-                        if (MoveItTool.filterBuildings)
+                        if (MoveItTool.filterBuildings || MITE.filterSurfaces)
                         {
                             ushort building = BuildingManager.instance.m_buildingGrid[i * 270 + j];
                             int count = 0;
@@ -315,9 +319,13 @@ namespace MITE
                                 //Debug.Log($"Building:{building}");
                                 if (Detour_Utils.IsBuildingValid(ref buildingBuffer[building], itemLayers) && _MIT.Method("PointInRectangle", m_selection, buildingBuffer[building].m_position).GetValue<bool>())
                                 {
-                                    id.Building = Building.FindParentBuilding(building);
-                                    if (id.Building == 0) id.Building = building;
-                                    list.Add(id);
+                                    bool isSurface = Filters.IsSurface(buildingBuffer[building].Info);
+                                    if ((isSurface && MITE.filterSurfaces) || (!isSurface && MoveItTool.filterBuildings))
+                                    {
+                                        id.Building = Building.FindParentBuilding(building);
+                                        if (id.Building == 0) id.Building = building;
+                                        list.Add(id);
+                                    }
                                 }
                                 building = buildingBuffer[building].m_nextGridBuilding;
 
