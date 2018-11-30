@@ -40,12 +40,12 @@ namespace MITE
 
         public static Dictionary<string, NetworkFilter> NetworkFilters = new Dictionary<string, NetworkFilter>
         {
-            { "Roads", new NetworkFilter(true, new List<Type> { typeof(RoadBaseAI) } ) },
+            { "Roads", new NetworkFilter(true, new List<Type> { typeof(RoadBaseAI) }, new List<string> { "Beautification Item" } ) },
             { "Tracks", new NetworkFilter(true, new List<Type> { typeof(TrainTrackBaseAI), typeof(MonorailTrackAI) } ) },
             { "Paths", new NetworkFilter(true, new List<Type> { typeof(PedestrianPathAI), typeof(PedestrianTunnelAI), typeof(PedestrianBridgeAI), typeof(PedestrianWayAI) } ) },
             { "Fences", new NetworkFilter(true, new List<Type> { typeof(DecorationWallAI) } ) },
             { "Powerlines", new NetworkFilter(true, new List<Type> { typeof(PowerLineAI) } ) },
-            { "Others", new NetworkFilter(true,  null ) }
+            { "Others", new NetworkFilter(true) }
         };
 
 
@@ -202,6 +202,21 @@ namespace MITE
 
         public static bool Filter(BuildingInfo info)
         {
+            if (!MoveItTool.marqueeSelection)
+            {
+                if (MITE.Settings.PillarsAsNotBuildings)
+                {
+                    // Filter out pylons and pillars
+                    //Debug.Log($"SINGLE m_class.name:{info.m_class.name}");
+                    if (Array.Exists(PillarClassNames, s => s.Equals(info.m_class.name)))
+                    {
+                        return false;
+                    }
+                    return true;
+                }
+                return true;
+            }
+
             if (IsSurface(info)) {
                 if (MITE.filterSurfaces) return true;
                 else return false;
@@ -212,7 +227,7 @@ namespace MITE
                 if (MITE.Settings.PillarsAsNotBuildings)
                 {
                     // Filter out pylons and pillars
-                    Debug.Log($"m_class.name:{info.m_class.name}");
+                    //Debug.Log($"MARQUEE m_class.name:{info.m_class.name}");
                     if (Array.Exists(PillarClassNames, s => s.Equals(info.m_class.name)))
                     {
                         return false;
@@ -283,7 +298,7 @@ namespace MITE
             if (!MoveItTool.marqueeSelection) return true;
             if (!MITE.filterNetworks) return true;
 
-            NetworkFilter nf = NetworkFilter.GetNetworkFilter(info.GetAI().GetType());
+            NetworkFilter nf = NetworkFilter.GetNetworkFilter(info);
             return nf.enabled;
         }
     }
@@ -292,12 +307,14 @@ namespace MITE
     public class NetworkFilter
     {
         public bool enabled;
-        public List<Type> aiType;
+        public List<Type> aiTypes;
+        public List<string> excludeClasses;
 
-        public NetworkFilter(bool e, List<Type> a)
+        public NetworkFilter(bool e, List<Type> a = null, List<string> ex = null)
         {
             enabled = e;
-            aiType = a;
+            aiTypes = a;
+            excludeClasses = ex;
         }
 
         public static void SetNetworkFilter(string name, bool e)
@@ -305,18 +322,25 @@ namespace MITE
             Filters.NetworkFilters.GetValueSafe(name).enabled = e;
         }
 
-        public static NetworkFilter GetNetworkFilter(Type ai)
+        public static NetworkFilter GetNetworkFilter(NetInfo info)
         {
             foreach (NetworkFilter nf in Filters.NetworkFilters.Values)
             {
                 //Debug.Log($"ai:{ai}, count:{(nf.aiType == null ? 0 : nf.aiType.Count)}");
-                if (nf.aiType != null)
+                if (nf.aiTypes != null)
                 {
-                    foreach (Type t in nf.aiType)
+                    foreach (Type t in nf.aiTypes)
                     {
-                        if (ai == t || ai.IsSubclassOf(t))
+                        if (info.GetAI().GetType() == t || info.GetAI().GetType().IsSubclassOf(t))
                         {
-                            return nf;
+                            if (nf.excludeClasses == null)
+                            {
+                                return nf;
+                            }
+                            if (!nf.excludeClasses.Contains(info.m_class.name))
+                            {
+                                return nf;
+                            }
                         }
                     }
                 }
