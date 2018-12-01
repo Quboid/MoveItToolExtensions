@@ -241,6 +241,8 @@ namespace MITE
             alignHeight.normalFgSprite = "AlignHeight";
             alignHeight.eventClicked += UI.AlignToolsClicked;
             #endregion
+
+            UI.DbgPanel = new DebugPanel();
         }
     }
 }

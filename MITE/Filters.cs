@@ -35,8 +35,13 @@ namespace MITE
         };
         static readonly string[] PillarClassNames = new string[]
         {
-            "Highway", "Electricity Wire", "Electricity Facility", "Pedestrian Path", "Train Track", "Monorail Track", "CableCar Facility"
+            "Highway", "Pedestrian Path", "Train Track", "Monorail Track", "CableCar Facility"
         };
+        static readonly string[] PylonClassNames = new string[]
+        {
+            "Electricity Wire", "Electricity Facility"
+        };
+
 
         public static Dictionary<string, NetworkFilter> NetworkFilters = new Dictionary<string, NetworkFilter>
         {
@@ -206,13 +211,18 @@ namespace MITE
             {
                 if (MITE.Settings.PillarsAsNotBuildings)
                 {
-                    // Filter out pylons and pillars
                     //Debug.Log($"SINGLE m_class.name:{info.m_class.name}");
                     if (Array.Exists(PillarClassNames, s => s.Equals(info.m_class.name)))
                     {
                         return false;
                     }
-                    return true;
+                }
+                if (MITE.Settings.PylonsAsNotBuildings)
+                {
+                    if (Array.Exists(PylonClassNames, s => s.Equals(info.m_class.name)))
+                    {
+                        return false;
+                    }
                 }
                 return true;
             }
@@ -226,13 +236,18 @@ namespace MITE
             {
                 if (MITE.Settings.PillarsAsNotBuildings)
                 {
-                    // Filter out pylons and pillars
                     //Debug.Log($"MARQUEE m_class.name:{info.m_class.name}");
                     if (Array.Exists(PillarClassNames, s => s.Equals(info.m_class.name)))
                     {
                         return false;
                     }
-                    return true;
+                }
+                if (MITE.Settings.PylonsAsNotBuildings)
+                {
+                    if (Array.Exists(PylonClassNames, s => s.Equals(info.m_class.name)))
+                    {
+                        return false;
+                    }
                 }
                 return true;
             }

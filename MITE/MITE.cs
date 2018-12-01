@@ -40,9 +40,9 @@ namespace MITE
             Settings.OnSettingsUI(helper);
         }
 
-        public const MoveItTool.ToolState TOOL_KEY = (MoveItTool.ToolState)6;
-        public const int TOOL_ACTION_DO = 1;
-        public const int UI_FILTER_CB_HEIGHT = 25;
+        public const MoveItTool.ToolState Tool_Key = (MoveItTool.ToolState)6;
+        public const int Tool_Action_Do = 1;
+        public const int UI_Filter_CB_Height = 25;
 
         public static bool filterSurfaces = true;
         public static bool filterNetworks = false;

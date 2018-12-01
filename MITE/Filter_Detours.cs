@@ -243,7 +243,12 @@ namespace MITE
                 }
             }
 
+            Debug.Log($"DP:{UI.DbgPanel}");
             //Debug.Log($"ID=({id.Building},{id.Prop},{id.NetNode},{id.NetSegment},{id.Tree})");
+            //if (UI.DebugPanel != null)
+            //{
+                UI.DbgPanel.Update(id);
+            //}
             ___m_hoverInstance = id;
             return false;
         }

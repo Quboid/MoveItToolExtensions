@@ -101,7 +101,7 @@ namespace MITE
                 action.newAngle = angle;
                 action.followTerrain = MoveItTool.followTerrain;
                 ActionQueue.instance.Push(action);
-                ___m_nextAction = MITE.TOOL_ACTION_DO;
+                ___m_nextAction = MITE.Tool_Action_Do;
 
                 //Debug.Log($"Angle:{angle}, from {___m_hoverInstance}");
                 return MITE.DeactivateAlignTool(false);

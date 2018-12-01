@@ -31,6 +31,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="000_ModTools">
+      <HintPath>C:\Users\Rob\AppData\Local\Colossal Order\Cities_Skylines\Addons\Mods\ModTools\000_ModTools.dll</HintPath>
+    </Reference>
     <Reference Include="0Harmony">
       <HintPath>..\..\..\Harmony\Harmony-master\Harmony\bin\Release\net35\0Harmony.dll</HintPath>
     </Reference>
@@ -58,6 +61,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DebugPanel.cs" />
     <Compile Include="Filters.cs" />
     <Compile Include="Filter_Detours.cs" />
     <Compile Include="MITE.cs" />

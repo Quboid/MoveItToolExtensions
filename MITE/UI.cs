@@ -12,6 +12,7 @@ namespace MITE
         public static List<UICheckBox> FilterCBs = new List<UICheckBox>();
         public static UIButton ToggleNF, AlignToolsBtn;
         public static UIPanel FilterPanel, AlignToolsPanel;
+        public static DebugPanel DbgPanel;
         public static Dictionary<string, UIButton> AlignButtons = new Dictionary<string, UIButton>();
         public static Color32 TextColor = new Color32(175, 216, 235, 255);
         public static Color32 ActiveLabelColor = new Color32(255, 255, 255, 255);
@@ -254,8 +255,8 @@ namespace MITE
                     }
                 }
 
-                FilterPanel.height += MITE.UI_FILTER_CB_HEIGHT * filterRows;
-                FilterPanel.absolutePosition += new Vector3(0f, 0 - (MITE.UI_FILTER_CB_HEIGHT * filterRows));
+                FilterPanel.height += MITE.UI_Filter_CB_Height * filterRows;
+                FilterPanel.absolutePosition += new Vector3(0f, 0 - (MITE.UI_Filter_CB_Height * filterRows));
                 _updateToggleNFBtn();
             }
             else
@@ -272,8 +273,8 @@ namespace MITE
                     }
                 }
 
-                FilterPanel.height -= MITE.UI_FILTER_CB_HEIGHT * filterRows;
-                FilterPanel.absolutePosition -= new Vector3(0f, 0 - (MITE.UI_FILTER_CB_HEIGHT * filterRows));
+                FilterPanel.height -= MITE.UI_Filter_CB_Height * filterRows;
+                FilterPanel.absolutePosition -= new Vector3(0f, 0 - (MITE.UI_Filter_CB_Height * filterRows));
                 _updateToggleNFBtn();
             }
 

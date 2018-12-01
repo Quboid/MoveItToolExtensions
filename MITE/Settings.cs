@@ -14,6 +14,8 @@ namespace MITE
         public bool DocksAsSurfaces = true;
         public bool BrushesAsSurfaces = true;
         public bool PillarsAsNotBuildings = true;
+        public bool PylonsAsNotBuildings = true;
+        public bool ShowDebugPanel = false;
 
         public Settings() { }
         public void OnPreSerialize() { }
@@ -72,12 +74,28 @@ namespace MITE
                 SaveConfiguration();
             });
             helper.AddSpace(20);
-            group = helper.AddGroup("Hide from selection:");
-            cb = (UICheckBox)group.AddCheckbox("Pylons and network pillars\n(Will still be moved/deleted with attached node)", MITE.Settings.PillarsAsNotBuildings, (i) =>
+            group = helper.AddGroup("Attach buildings to nodes (will still be moved/deleted with attached node):");
+            cb = (UICheckBox)group.AddCheckbox("Pillars\n", MITE.Settings.PillarsAsNotBuildings, (i) =>
             {
                 MITE.Settings.PillarsAsNotBuildings = i;
                 SaveConfiguration();
             });
+            cb.name = "MITE_PillarsAsNotBuildings";
+            cb = (UICheckBox)group.AddCheckbox("Powerline pylons/posts", MITE.Settings.PylonsAsNotBuildings, (i) =>
+            {
+                MITE.Settings.PylonsAsNotBuildings = i;
+                SaveConfiguration();
+            });
+            cb.name = "MITE_PylonsAsNotBuildings";
+            helper.AddSpace(20);
+            group = helper.AddGroup("Additional Options:");
+            cb = (UICheckBox)group.AddCheckbox("Show MITE debug panel\n(Affects performance, do not enable unless you have a specific reason)", MITE.Settings.ShowDebugPanel, (i) =>
+            {
+                MITE.Settings.ShowDebugPanel = i;
+                UI.DbgPanel.Visible(i);
+                SaveConfiguration();
+            });
+            cb.name = "MITE_DebugPanel_Toggle";
             helper.AddSpace(20);
         }
     }
