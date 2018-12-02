@@ -1,49 +1,26 @@
-﻿using ColossalFramework.UI;
-using Harmony;
-using ModTools;
+﻿using ColossalFramework.Plugins;
+using ColossalFramework.UI;
 using MoveIt;
 using System;
+using System.Linq;
 using UnityEngine;
 
 namespace MITE
 {
     class DebugPanel
     {
-        public UIPanel Panel;//, HoverInfo;
-        public UIButton ToModTools;
+        public UIPanel Panel;
+        public DebugPanel_ModTools ModTools = null;
         private UILabel HoverLarge, HoverSmall;
         private InstanceID id, lastId;
-        private SceneExplorer scene;
-        private ReferenceChain buildingsBufferRefChain, nodesBufferRefChain, segmentsBufferRefChain;
-
 
         public DebugPanel()
         {
             _initialise();
 
-            try
+            if (isModToolsEnabled())
             {
-                scene = Traverse.Create(ModTools.ModTools.Instance).Field("sceneExplorer").GetValue<SceneExplorer>();
-                buildingsBufferRefChain = new ReferenceChain()
-                    .Add(BuildingManager.instance.gameObject)
-                    .Add(BuildingManager.instance)
-                    .Add(typeof(BuildingManager).GetField("m_buildings"))
-                    .Add(typeof(Array16<Building>).GetField("m_buffer"));
-                nodesBufferRefChain = new ReferenceChain()
-                    .Add(NetManager.instance.gameObject)
-                    .Add(NetManager.instance)
-                    .Add(typeof(NetManager).GetField("m_nodes"))
-                    .Add(typeof(Array16<Building>).GetField("m_buffer"));
-                segmentsBufferRefChain = new ReferenceChain()
-                    .Add(NetManager.instance.gameObject)
-                    .Add(NetManager.instance)
-                    .Add(typeof(NetManager).GetField("m_segments"))
-                    .Add(typeof(Array16<Building>).GetField("m_buffer"));
-            }
-            catch (NullReferenceException ex)
-            {
-                scene = null;
-                Debug.Log($"{ex}");
+                ModTools = new DebugPanel_ModTools(Panel);
             }
         }
 
@@ -98,7 +75,7 @@ namespace MITE
                 BuildingInfo info = BuildingManager.instance.m_buildings.m_buffer[id.Building].Info;
                 HoverLarge.text = $"B:{id.Building}  {info.name}";
                 HoverSmall.text = $"{info.GetType()} ({info.GetAI().GetType()})\n{info.m_class.name}\n({info.m_class.m_service}.{info.m_class.m_subService})";
-                ToModTools.isVisible = true;
+                if (isModToolsEnabled()) ModTools.Id = id;
             }
             if (id.Prop > 0)
             {
@@ -107,60 +84,47 @@ namespace MITE
                 if (info.m_isDecal) type = "D";
                 HoverLarge.text = $"{type}:{id.Prop}  {info.name}";
                 HoverSmall.text = $"{info.GetType()}\n{info.m_class.name}";
-                ToModTools.isVisible = false;
+                if (isModToolsEnabled()) ModTools.Id = id;
             }
             if (id.Tree > 0)
             {
                 TreeInfo info = TreeManager.instance.m_trees.m_buffer[id.Tree].Info;
                 HoverLarge.text = $"T:{id.Tree}  {info.name}";
                 HoverSmall.text = $"{info.GetType()}\n{info.m_class.name}";
-                ToModTools.isVisible = false;
+                if (isModToolsEnabled()) ModTools.Id = id;
             }
             if (id.NetNode > 0)
             {
                 NetInfo info = NetManager.instance.m_nodes.m_buffer[id.NetNode].Info;
                 HoverLarge.text = $"N:{id.NetNode}  {info.name}";
                 HoverSmall.text = $"{info.GetType()} ({info.GetAI().GetType()})\n{info.m_class.name}";
-                ToModTools.isVisible = true;
+                if (isModToolsEnabled()) ModTools.Id = id;
             }
             if (id.NetSegment > 0)
             {
                 NetInfo info = NetManager.instance.m_segments.m_buffer[id.NetSegment].Info;
                 HoverLarge.text = $"S:{id.NetSegment}  {info.name}";
                 HoverSmall.text = $"{info.GetType()} ({info.GetAI().GetType()})\n{info.m_class.name}";
-                ToModTools.isVisible = true;
+                if (isModToolsEnabled()) ModTools.Id = id;
             }
 
-
+            lastId = id;
         }
 
 
-        private void _toModTools(UIComponent c, UIMouseEventParameter p)
+        public static bool isModToolsEnabled()
         {
-            if (id.Building > 0)
-            {
-                scene.ExpandFromRefChain(buildingsBufferRefChain.Add(id.Building));
-            }
-            else if (id.NetNode > 0)
-            {
-                scene.ExpandFromRefChain(nodesBufferRefChain.Add(id.NetNode));
-            }
-            else if (id.NetSegment > 0)
-            {
-                scene.ExpandFromRefChain(segmentsBufferRefChain.Add(id.NetSegment));
-            }
-            scene.visible = true;
+            return PluginManager.instance.GetPluginsInfo().Any(mod => (mod.publishedFileID.AsUInt64 == 450877484uL || mod.name.Contains("ModTools")) && mod.isEnabled);
         }
 
 
         private void _initialise()
         {
-            Debug.Log($"A");
             Panel = UIView.GetAView().AddUIComponent(typeof(UIPanel)) as UIPanel;
             Panel.name = "MITE_DebugPanel";
             Panel.atlas = ResourceLoader.GetAtlas("Ingame");
             Panel.backgroundSprite = "SubcategoriesPanel";
-            Panel.size = new Vector2(260, 62);
+            Panel.size = new Vector2(260, 61);
             Panel.absolutePosition = new Vector3(Panel.GetUIView().GetScreenResolution().x - 330, 3);
             Panel.clipChildren = true;
             Panel.isVisible = MITE.Settings.ShowDebugPanel;
@@ -177,20 +141,11 @@ namespace MITE
             HoverSmall = Panel.AddUIComponent<UILabel>();
             HoverSmall.textScale = 0.65f;
             HoverSmall.text = "No item being hovered\n ";
-            HoverSmall.relativePosition = new Vector3(5, 24);
+            HoverSmall.relativePosition = new Vector3(5, 23);
             HoverSmall.width = HoverSmall.parent.width - 20;
             HoverSmall.clipChildren = true;
             HoverSmall.useDropShadow = true;
             HoverSmall.dropShadowOffset = new Vector2(1, -1);
-
-            ToModTools = Panel.AddUIComponent<UIButton>();
-            ToModTools.name = "MITE_ToModTools";
-            ToModTools.text = "MT";
-            ToModTools.size = new Vector2(24, 16);
-            ToModTools.relativePosition = new Vector3(Panel.width - 30, 2);
-            ToModTools.eventClicked += _toModTools;
-
-            Debug.Log($"absolutePosition={Panel.absolutePosition}");
         }
     }
 }

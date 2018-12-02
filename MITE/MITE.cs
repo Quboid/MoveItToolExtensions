@@ -12,6 +12,11 @@ namespace MITE
 {
     public class MITE : LoadingExtensionBase, IUserMod
     {
+        public const MoveItTool.ToolState Tool_Key = (MoveItTool.ToolState)6;
+        public const int Tool_Action_Do = 1;
+        public const int UI_Filter_CB_Height = 25;
+        public const bool Enable_ModTools = false;
+
         public string Name => "Move It Tool Extensions";
         public string Description => "Extra tools and filters for Move It!";
         internal static readonly string settingsFilePath = Path.Combine(DataLocation.localApplicationData, "MITE.xml");
@@ -40,9 +45,6 @@ namespace MITE
             Settings.OnSettingsUI(helper);
         }
 
-        public const MoveItTool.ToolState Tool_Key = (MoveItTool.ToolState)6;
-        public const int Tool_Action_Do = 1;
-        public const int UI_Filter_CB_Height = 25;
 
         public static bool filterSurfaces = true;
         public static bool filterNetworks = false;

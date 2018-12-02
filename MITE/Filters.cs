@@ -20,9 +20,13 @@ namespace MITE
             "ploppableasphalt-decal"
         };
 
-        static readonly string[] SurfaceExtraNames = new string[]
+        static readonly string[] SurfaceExtraBuildingNames = new string[]
         {
             "1136492728.R69 Docks", "999653286.Ploppable"
+        };
+        static readonly string[] SurfaceExtraPropNames = new string[]
+        {
+            "999653286.Ploppable"
         };
         static readonly string[] SurfaceBrushNames = new string[]
         {
@@ -153,7 +157,7 @@ namespace MITE
         {
             if (MITE.Settings.ExtraAsSurfaces)
             {
-                foreach (string subname in SurfaceExtraNames)
+                foreach (string subname in SurfaceExtraBuildingNames)
                 {
                     if (subname.Length > info.name.Length) continue;
                     if (subname == info.name.Substring(0, subname.Length))
@@ -191,7 +195,7 @@ namespace MITE
 
             if (MITE.Settings.ExtraAsSurfaces)
             {
-                foreach (string subname in SurfaceExtraNames)
+                foreach (string subname in SurfaceExtraPropNames)
                 {
                     if (subname.Length > info.name.Length) continue;
                     if (subname == info.name.Substring(0, subname.Length))
