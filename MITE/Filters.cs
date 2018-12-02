@@ -215,16 +215,27 @@ namespace MITE
             {
                 if (MITE.Settings.PillarsAsNotBuildings)
                 {
-                    //Debug.Log($"SINGLE m_class.name:{info.m_class.name}");
+                    //Debug.Log($"SINGLE-Pi m_class.name:{info.m_class.name}");
                     if (Array.Exists(PillarClassNames, s => s.Equals(info.m_class.name)))
                     {
+                        if (Event.current.alt)
+                        {
+                            //Debug.Log("Alt");
+                            return true;
+                        }
                         return false;
                     }
                 }
                 if (MITE.Settings.PylonsAsNotBuildings)
                 {
+                    //Debug.Log($"SINGLE-Py m_class.name:{info.m_class.name}");
                     if (Array.Exists(PylonClassNames, s => s.Equals(info.m_class.name)))
                     {
+                        if (Event.current.alt)
+                        {
+                            //Debug.Log("Alt");
+                            return true;
+                        }
                         return false;
                     }
                 }

@@ -58,6 +58,7 @@ namespace MITE
             }
             if (id == InstanceID.Empty)
             {
+                lastId = id;
                 HoverLarge.textColor = new Color32(255, 255, 255, 255);
                 return;
             }

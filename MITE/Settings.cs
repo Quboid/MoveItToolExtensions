@@ -57,7 +57,7 @@ namespace MITE
         {
             helper.AddSpace(20);
             UICheckBox cb;
-            UIHelperBase group = helper.AddGroup("Recognise as surfaces:");
+            UIHelper group = (UIHelper)helper.AddGroup("Recognise as surfaces:");
             cb = (UICheckBox)group.AddCheckbox("Ploppable asphalt decals", MITE.Settings.DecalsAsSurfaces, (i) =>
             {
                 MITE.Settings.DecalsAsSurfaces = i;
@@ -74,7 +74,7 @@ namespace MITE
                 SaveConfiguration();
             });
             helper.AddSpace(20);
-            group = helper.AddGroup("Attach buildings to nodes (will still be moved/deleted with attached node):");
+            group = (UIHelper)helper.AddGroup("Only select nodes for these items:");
             cb = (UICheckBox)group.AddCheckbox("Pillars\n", MITE.Settings.PillarsAsNotBuildings, (i) =>
             {
                 MITE.Settings.PillarsAsNotBuildings = i;
@@ -87,8 +87,11 @@ namespace MITE
                 SaveConfiguration();
             });
             cb.name = "MITE_PylonsAsNotBuildings";
+            UIPanel groupPanel = (UIPanel)group.self;
+            UILabel note = groupPanel.AddUIComponent<UILabel>();
+            note.text = "\nNote: Items can be separately selected by holding Alt. Disable to marquee select these buildings.";
             helper.AddSpace(20);
-            group = helper.AddGroup("Additional Options:");
+            group = (UIHelper)helper.AddGroup("Advanced Options:");
             cb = (UICheckBox)group.AddCheckbox("Show MITE debug panel\n(Affects performance, do not enable unless you have a specific reason)", MITE.Settings.ShowDebugPanel, (i) =>
             {
                 MITE.Settings.ShowDebugPanel = i;
