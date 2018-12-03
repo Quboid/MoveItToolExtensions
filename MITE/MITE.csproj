@@ -74,6 +74,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ResourceLoader.cs" />
     <Compile Include="Settings.cs" />
+    <Compile Include="StepOver.cs" />
     <Compile Include="UI.cs" />
     <Compile Include="UI_Detours.cs" />
   </ItemGroup>
@@ -94,6 +95,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Icons\NFCollapse.png" />
     <EmbeddedResource Include="Icons\NFCollapseHover.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="status.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

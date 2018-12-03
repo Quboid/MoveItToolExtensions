@@ -24,10 +24,10 @@ namespace MITE
                 btn.tooltip = "Open item in ModTools' scene explorer";
                 btn.size = new Vector2(16, 16);
                 btn.relativePosition = new Vector3(parent.width - 26, 4);
-            }
+                //}
 
                 // Disabled ModTools Inegration
-                /*
+
                 btn.eventClicked += _toModTools;
 
                 _ModTools = Traverse.Create(ModTools.ModTools.Instance).Field("sceneExplorer").GetValue<SceneExplorer>();
@@ -90,7 +90,7 @@ namespace MITE
             {
                 _ModTools.ExpandFromRefChain(segmentsBufferRefChain.Add(Id.NetSegment));
             }
-            _ModTools.visible = true;*/
+            _ModTools.visible = true;
         }
     }
 }

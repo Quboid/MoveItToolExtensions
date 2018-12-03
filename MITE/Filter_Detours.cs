@@ -33,11 +33,6 @@ namespace MITE
 
             Vector3 location = _MIT.Method("RaycastMouseLocation", mouseRay).GetValue<Vector3>();
 
-            int gridMinX = Mathf.Max((int)((location.x - 16f) / 64f + 135f) - 1, 0);
-            int gridMinZ = Mathf.Max((int)((location.z - 16f) / 64f + 135f) - 1, 0);
-            int gridMaxX = Mathf.Min((int)((location.x + 16f) / 64f + 135f) + 1, 269);
-            int gridMaxZ = Mathf.Min((int)((location.z + 16f) / 64f + 135f) + 1, 269);
-
             InstanceID id = InstanceID.Empty;
 
             ItemClass.Layer itemLayers = _MIT.Method("GetItemLayers").GetValue<ItemClass.Layer>();
@@ -49,6 +44,9 @@ namespace MITE
             bool selectNodes = true;
             bool selectSegments = true;
             bool selectTrees = true;
+
+            bool _stepProcessed = false;
+            bool _repeatSearch = false;
 
             if (MoveItTool.marqueeSelection)
             {
@@ -63,185 +61,223 @@ namespace MITE
 
             float smallestDist = 640000f;
 
-            for (int i = gridMinZ; i <= gridMaxZ; i++)
+
+            //int c = 0;
+            do
             {
-                for (int j = gridMinX; j <= gridMaxX; j++)
-                {
-                    if (selectBuilding || selectSurfaces)
-                    {
-                        ushort building = BuildingManager.instance.m_buildingGrid[i * 270 + j];
-                        int count = 0;
-                        while (building != 0u)
-                        {
-                            if (Detour_Utils.IsBuildingValid(ref buildingBuffer[building], itemLayers) && buildingBuffer[building].RayCast(building, ray, out float t) && t < smallestDist)
-                            {
-                                //Debug.Log($"Building:{building}");
+                //c++;
+                //if (c > 1) Debug.Log($"FILTER LOOP RESTARTED ({c})");
 
-                                if (Filters.Filter(buildingBuffer[building].Info))
-                                {
-                                    id.Building = Building.FindParentBuilding(building);
-                                    if (id.Building == 0) id.Building = building;
-                                    smallestDist = t;
-                                }
-                            }
-                            building = buildingBuffer[building].m_nextGridBuilding;
-
-                            if (++count > 49152)
-                            {
-                                CODebugBase<LogChannel>.Error(LogChannel.Core, "Invalid list detected!\n" + Environment.StackTrace);
-                                break;
-                            }
-                        }
-                    }
-
-                    if (selectProps || selectDecals || selectSurfaces)
-                    {
-                        ushort prop = PropManager.instance.m_propGrid[i * 270 + j];
-                        int count = 0;
-                        while (prop != 0u)
-                        {
-                            if (Filters.Filter(propBuffer[prop].Info))
-                            {
-                                //Debug.Log($"Prop:{prop}");
-                                if (propBuffer[prop].RayCast(prop, ray, out float t, out float targetSqr) && t < smallestDist)
-                                {
-                                    id.Prop = prop;
-                                    smallestDist = t;
-                                }
-                            }
-
-                            prop = propBuffer[prop].m_nextGridProp;
-
-                            if (++count > 65536)
-                            {
-                                CODebugBase<LogChannel>.Error(LogChannel.Core, "Invalid list detected!\n" + Environment.StackTrace);
-                            }
-                        }
-                    }
-
-                    if (selectNodes || selectBuilding)
-                    {
-                        ushort node = NetManager.instance.m_nodeGrid[i * 270 + j];
-                        int count = 0;
-                        while (node != 0u)
-                        {
-                            if (Detour_Utils.IsNodeValid(ref nodeBuffer[node], itemLayers) && Detour_Utils.RayCastNode(ref nodeBuffer[node], ray, -1000f, out float t, out float priority) && t < smallestDist)
-                            {
-                                //Debug.Log($"Node:{node}");
-                                ushort building = 0;
-                                if (!Event.current.alt)
-                                {
-                                    building = NetNode.FindOwnerBuilding(node, 363f);
-                                }
-
-                                if (building != 0)
-                                {
-                                    if (selectBuilding)
-                                    {
-                                        id.Building = Building.FindParentBuilding(building);
-                                        if (id.Building == 0) id.Building = building;
-                                        smallestDist = t;
-                                    }
-                                }
-                                else if (selectNodes)
-                                {
-                                    if (Filters.Filter(nodeBuffer[node]))
-                                    {
-                                        id.NetNode = node;
-                                        smallestDist = t;
-                                    }
-                                }
-                            }
-                            node = nodeBuffer[node].m_nextGridNode;
-
-                            if (++count > 32768)
-                            {
-                                CODebugBase<LogChannel>.Error(LogChannel.Core, "Invalid list detected!\n" + Environment.StackTrace);
-                            }
-                        }
-                    }
-
-                    if (selectSegments || selectBuilding)
-                    {
-                        ushort segment = NetManager.instance.m_segmentGrid[i * 270 + j];
-                        int count = 0;
-                        while (segment != 0u)
-                        {
-                            if (Detour_Utils.IsSegmentValid(ref segmentBuffer[segment], itemLayers) &&
-                                segmentBuffer[segment].RayCast(segment, ray, -1000f, false, out float t, out float priority) && t < smallestDist)
-                            {
-                                //Debug.Log($"Segment:{segment}");
-                                ushort building = 0;
-                                if (!Event.current.alt)
-                                {
-                                    building = MoveItTool.FindOwnerBuilding(segment, 363f);
-                                }
-
-                                if (building != 0)
-                                {
-                                    if (selectBuilding)
-                                    {
-                                        id.Building = Building.FindParentBuilding(building);
-                                        if (id.Building == 0) id.Building = building;
-                                        smallestDist = t;
-                                    }
-                                }
-                                else if (selectSegments)
-                                {
-                                    if (!selectNodes || (
-                                        !Detour_Utils.RayCastNode(ref nodeBuffer[segmentBuffer[segment].m_startNode], ray, -1000f, out float t2, out priority) && 
-                                        !Detour_Utils.RayCastNode(ref nodeBuffer[segmentBuffer[segment].m_endNode], ray, -1000f, out t2, out priority)
-                                    ))
-                                    {
-                                        if (Filters.Filter(segmentBuffer[segment]))
-                                        {
-                                            id.NetSegment = segment;
-                                            smallestDist = t;
-                                        }
-                                    }
-                                }
-                            }
-                            segment = segmentBuffer[segment].m_nextGridSegment;
-
-                            if (++count > 36864)
-                            {
-                                CODebugBase<LogChannel>.Error(LogChannel.Core, "Invalid list detected!\n" + Environment.StackTrace);
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (selectTrees)
-            {
-                gridMinX = Mathf.Max((int)((location.x - 8f) / 32f + 270f), 0);
-                gridMinZ = Mathf.Max((int)((location.z - 8f) / 32f + 270f), 0);
-                gridMaxX = Mathf.Min((int)((location.x + 8f) / 32f + 270f), 539);
-                gridMaxZ = Mathf.Min((int)((location.z + 8f) / 32f + 270f), 539);
+                int gridMinX = Mathf.Max((int)((location.x - 16f) / 64f + 135f) - 1, 0);
+                int gridMinZ = Mathf.Max((int)((location.z - 16f) / 64f + 135f) - 1, 0);
+                int gridMaxX = Mathf.Min((int)((location.x + 16f) / 64f + 135f) + 1, 269);
+                int gridMaxZ = Mathf.Min((int)((location.z + 16f) / 64f + 135f) + 1, 269);
 
                 for (int i = gridMinZ; i <= gridMaxZ; i++)
                 {
                     for (int j = gridMinX; j <= gridMaxX; j++)
                     {
-                        uint tree = TreeManager.instance.m_treeGrid[i * 540 + j];
-                        int count = 0;
-                        while (tree != 0)
+                        if (selectBuilding || selectSurfaces)
                         {
-                            if (treeBuffer[tree].RayCast(tree, ray, out float t, out float targetSqr) && t < smallestDist)
+                            //if (c > 1) Debug.Log($"H-({i * 270 + j}) {i},{j}");
+                            ushort building = BuildingManager.instance.m_buildingGrid[i * 270 + j];
+                            //if (c > 1) Debug.Log($"I-({i * 270 + j})");
+                            int count = 0;
+                            while (building != 0u)
                             {
-                                id.Tree = tree;
-                                smallestDist = t;
-                            }
-                            tree = treeBuffer[tree].m_nextGridTree;
+                                //if (c > 1) Debug.Log($"C - Repeat:{_repeatSearch} ({c}),B:{building}");
+                                if (MITE.StepOver.isValidB(building) && Detour_Utils.IsBuildingValid(ref buildingBuffer[building], itemLayers) && buildingBuffer[building].RayCast(building, ray, out float t) && t < smallestDist)
+                                {
+                                    //Debug.Log($"Building:{building}");
 
-                            if (++count > 262144)
+                                    if (Filters.Filter(buildingBuffer[building].Info))
+                                    {
+                                        id.Building = Building.FindParentBuilding(building);
+                                        if (id.Building == 0) id.Building = building;
+                                        smallestDist = t;
+                                    }
+                                }
+                                building = buildingBuffer[building].m_nextGridBuilding;
+
+                                if (++count > 49152)
+                                {
+                                    CODebugBase<LogChannel>.Error(LogChannel.Core, "Invalid list detected!\n" + Environment.StackTrace);
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (selectProps || selectDecals || selectSurfaces)
+                        {
+                            ushort prop = PropManager.instance.m_propGrid[i * 270 + j];
+                            int count = 0;
+                            while (prop != 0u)
                             {
-                                CODebugBase<LogChannel>.Error(LogChannel.Core, "Invalid list detected!\n" + Environment.StackTrace);
+                                //Debug.Log("D");
+                                if (MITE.StepOver.isValidP(prop) && Filters.Filter(propBuffer[prop].Info) && MITE.StepOver.isValidP(prop))
+                                {
+                                    //Debug.Log($"Prop:{prop}");
+                                    if (propBuffer[prop].RayCast(prop, ray, out float t, out float targetSqr) && t < smallestDist)
+                                    {
+                                        id.Prop = prop;
+                                        smallestDist = t;
+                                    }
+                                }
+
+                                prop = propBuffer[prop].m_nextGridProp;
+
+                                if (++count > 65536)
+                                {
+                                    CODebugBase<LogChannel>.Error(LogChannel.Core, "Invalid list detected!\n" + Environment.StackTrace);
+                                }
+                            }
+                        }
+
+                        if (selectNodes || selectBuilding)
+                        {
+                            ushort node = NetManager.instance.m_nodeGrid[i * 270 + j];
+                            int count = 0;
+                            while (node != 0u)
+                            {
+                                //Debug.Log("E");
+                                if (MITE.StepOver.isValidN(node) && Detour_Utils.IsNodeValid(ref nodeBuffer[node], itemLayers) && Detour_Utils.RayCastNode(ref nodeBuffer[node], ray, -1000f, out float t, out float priority) && t < smallestDist)
+                                {
+                                    //Debug.Log($"Node:{node}");
+                                    ushort building = 0;
+                                    if (!Event.current.alt)
+                                    {
+                                        building = NetNode.FindOwnerBuilding(node, 363f);
+                                    }
+
+                                    if (building != 0)
+                                    {
+                                        if (selectBuilding)
+                                        {
+                                            id.Building = Building.FindParentBuilding(building);
+                                            if (id.Building == 0) id.Building = building;
+                                            smallestDist = t;
+                                        }
+                                    }
+                                    else if (selectNodes)
+                                    {
+                                        if (Filters.Filter(nodeBuffer[node]))
+                                        {
+                                            id.NetNode = node;
+                                            smallestDist = t;
+                                        }
+                                    }
+                                }
+                                node = nodeBuffer[node].m_nextGridNode;
+
+                                if (++count > 32768)
+                                {
+                                    CODebugBase<LogChannel>.Error(LogChannel.Core, "Invalid list detected!\n" + Environment.StackTrace);
+                                }
+                            }
+                        }
+
+                        if (selectSegments || selectBuilding)
+                        {
+                            ushort segment = NetManager.instance.m_segmentGrid[i * 270 + j];
+                            int count = 0;
+                            while (segment != 0u)
+                            {
+                                //Debug.Log("F");
+                                if (MITE.StepOver.isValidS(segment) && Detour_Utils.IsSegmentValid(ref segmentBuffer[segment], itemLayers) &&
+                                    segmentBuffer[segment].RayCast(segment, ray, -1000f, false, out float t, out float priority) && t < smallestDist)
+                                {
+                                    //Debug.Log($"Segment:{segment}");
+                                    ushort building = 0;
+                                    if (!Event.current.alt)
+                                    {
+                                        building = MoveItTool.FindOwnerBuilding(segment, 363f);
+                                    }
+
+                                    if (building != 0)
+                                    {
+                                        if (selectBuilding)
+                                        {
+                                            id.Building = Building.FindParentBuilding(building);
+                                            if (id.Building == 0) id.Building = building;
+                                            smallestDist = t;
+                                        }
+                                    }
+                                    else if (selectSegments)
+                                    {
+                                        if (!selectNodes || (
+                                            !Detour_Utils.RayCastNode(ref nodeBuffer[segmentBuffer[segment].m_startNode], ray, -1000f, out float t2, out priority) &&
+                                            !Detour_Utils.RayCastNode(ref nodeBuffer[segmentBuffer[segment].m_endNode], ray, -1000f, out t2, out priority)
+                                        ))
+                                        {
+                                            if (Filters.Filter(segmentBuffer[segment]))
+                                            {
+                                                id.NetSegment = segment;
+                                                smallestDist = t;
+                                            }
+                                        }
+                                    }
+                                }
+                                segment = segmentBuffer[segment].m_nextGridSegment;
+
+                                if (++count > 36864)
+                                {
+                                    CODebugBase<LogChannel>.Error(LogChannel.Core, "Invalid list detected!\n" + Environment.StackTrace);
+                                }
                             }
                         }
                     }
                 }
+
+                if (selectTrees)
+                {
+                    gridMinX = Mathf.Max((int)((location.x - 8f) / 32f + 270f), 0);
+                    gridMinZ = Mathf.Max((int)((location.z - 8f) / 32f + 270f), 0);
+                    gridMaxX = Mathf.Min((int)((location.x + 8f) / 32f + 270f), 539);
+                    gridMaxZ = Mathf.Min((int)((location.z + 8f) / 32f + 270f), 539);
+
+                    for (int i = gridMinZ; i <= gridMaxZ; i++)
+                    {
+                        for (int j = gridMinX; j <= gridMaxX; j++)
+                        {
+                            uint tree = TreeManager.instance.m_treeGrid[i * 540 + j];
+                            int count = 0;
+                            while (tree != 0)
+                            {
+                                //Debug.Log("G");
+                                if (MITE.StepOver.isValidT(tree) && treeBuffer[tree].RayCast(tree, ray, out float t, out float targetSqr) && t < smallestDist)
+                                {
+                                    id.Tree = tree;
+                                    smallestDist = t;
+                                }
+                                tree = treeBuffer[tree].m_nextGridTree;
+
+                                if (++count > 262144)
+                                {
+                                    CODebugBase<LogChannel>.Error(LogChannel.Core, "Invalid list detected!\n" + Environment.StackTrace);
+                                }
+                            }
+                        }
+                    }
+                }
+                _repeatSearch = false;
+
+                if (Event.current.Equals(Event.KeyboardEvent("^n")))
+                {
+                    if (!_stepProcessed)
+                    {
+                        //Debug.Log("A");
+                        MITE.StepOver.Add(id);
+                        _stepProcessed = true;
+                        _repeatSearch = true;
+                        //Debug.Log("B");
+                    }
+                }
+                else
+                {
+                    _stepProcessed = false;
+                }
             }
+            while (_repeatSearch);
 
             //Debug.Log($"ID=({id.Building},{id.Prop},{id.NetNode},{id.NetSegment},{id.Tree})");
             if (UI.DbgPanel != null)
@@ -249,6 +285,7 @@ namespace MITE
                 UI.DbgPanel.Update(id);
             }
             ___m_hoverInstance = id;
+
             return false;
         }
     }

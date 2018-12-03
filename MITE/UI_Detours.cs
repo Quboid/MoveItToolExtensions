@@ -217,7 +217,7 @@ namespace MITE
             UIButton alignIndividual = UI.AlignButtons.GetValueSafe("AlignIndividual");
             alignIndividual.name = "AlignIndividual";
             alignIndividual.atlas = UI.GetIconsAtlas();
-            alignIndividual.tooltip = "Align rotation individually";
+            alignIndividual.tooltip = "Align rotation of selected items";
             alignIndividual.playAudioEvents = true;
             alignIndividual.size = new Vector2(36, 36);
             alignIndividual.normalBgSprite = "OptionBase";
