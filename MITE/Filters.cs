@@ -41,9 +41,10 @@ namespace MITE
         {
             "Highway", "Pedestrian Path", "Train Track", "Monorail Track", "CableCar Facility"
         };
-        static readonly string[] PylonClassNames = new string[]
+        static readonly Type[] PylonAITypes = new Type[]
         {
-            "Electricity Wire", "Electricity Facility"
+            typeof(PowerPoleAI)
+            //"Electricity Wire", "Electricity Facility"
         };
 
 
@@ -229,7 +230,7 @@ namespace MITE
                 if (MITE.Settings.PylonsAsNotBuildings)
                 {
                     //Debug.Log($"SINGLE-Py m_class.name:{info.m_class.name}");
-                    if (Array.Exists(PylonClassNames, s => s.Equals(info.m_class.name)))
+                    if (Array.Exists(PylonAITypes, s => s.Equals(info.GetAI().GetType())))
                     {
                         if (Event.current.alt)
                         {
@@ -259,7 +260,7 @@ namespace MITE
                 }
                 if (MITE.Settings.PylonsAsNotBuildings)
                 {
-                    if (Array.Exists(PylonClassNames, s => s.Equals(info.m_class.name)))
+                    if (Array.Exists(PylonAITypes, s => s.Equals(info.GetAI().GetType())))
                     {
                         return false;
                     }
