@@ -15,7 +15,7 @@ namespace MITE
         public const MoveItTool.ToolState Tool_Key = (MoveItTool.ToolState)6;
         public const int Tool_Action_Do = 1;
         public const int UI_Filter_CB_Height = 25;
-        public const bool Enable_ModTools = true;
+        public const bool Enable_ModTools = false;
 
         public string Name => "Move It Tool Extensions";
         public string Description => "Extra tools and filters for Move It!";

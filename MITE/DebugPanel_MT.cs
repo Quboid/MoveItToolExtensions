@@ -1,7 +1,8 @@
-﻿using ModTools;
+﻿//using ModTools;
 using Harmony;
 using ColossalFramework.UI;
 using UnityEngine;
+using System;
 
 namespace MITE
 {
@@ -24,12 +25,24 @@ namespace MITE
                 btn.tooltip = "Open item in ModTools' scene explorer";
                 btn.size = new Vector2(16, 16);
                 btn.relativePosition = new Vector3(parent.width - 26, 4);
+
+                try
+                {
+                    Traverse t = Traverse.CreateWithType("000_ModTools");
+                    Debug.Log($"{t}");
+                }
+                catch (Exception ex)
+                {
+                    Debug.Log(ex);
+                }
+
                 //}
 
                 // Disabled ModTools Inegration
-
+                /*
                 btn.eventClicked += _toModTools;
 
+                System.Type SceneExplorer = Traverse.Create(ModTools.ModTools.Instance).Field("SceneExplorer").GetType();
                 _ModTools = Traverse.Create(ModTools.ModTools.Instance).Field("sceneExplorer").GetValue<SceneExplorer>();
 
                 buildingsBufferRefChain = new ReferenceChain()
@@ -90,7 +103,8 @@ namespace MITE
             {
                 _ModTools.ExpandFromRefChain(segmentsBufferRefChain.Add(Id.NetSegment));
             }
-            _ModTools.visible = true;
+            _ModTools.visible = true;*/
+            }
         }
     }
 }
