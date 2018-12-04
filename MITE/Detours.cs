@@ -31,7 +31,7 @@ namespace MITE
 
     [HarmonyPatch(typeof(MoveItTool))]
     [HarmonyPatch("StartAligningHeights")]
-    class MIT_StatAligningHeights
+    class MIT_StartAligningHeights
     {
         public static void Postfix(MoveItTool __instance)
         {
@@ -77,7 +77,7 @@ namespace MITE
                     Vector3 startPos = NetManager.instance.m_nodes.m_buffer[segmentBuffer[ms.id.NetSegment].m_startNode].m_position;
                     Vector3 endPos = NetManager.instance.m_nodes.m_buffer[segmentBuffer[ms.id.NetSegment].m_endNode].m_position;
 
-                    //Debug.Log($"Vector:{endNode.x - startNode.x},{endNode.z - startNode.z} Start:{startNode.x},{startNode.z} End:{endNode.x},{endNode.z}");
+                    //Debug.Log($"Vector:{endPos.x - startPos.x},{endPos.z - startPos.z} Start:{startPos.x},{startPos.z} End:{endPos.x},{endPos.z}");
                     angle = (float)Math.Atan2(endPos.z - startPos.z, endPos.x - startPos.x);
                 }
                 else
@@ -109,7 +109,7 @@ namespace MITE
 
             if (__instance.toolState == MoveItTool.ToolState.AligningHeights)
             {
-                //Debug.Log($"toolState is AligningHeights, AlignMode:{MITE.AlignMode}");
+                //Debug.Log($"toolState is AligningHeights, AlignMode:{MITE.AlignMode} hB:{___m_hoverInstance.id.Building} hN:{___m_hoverInstance.id.NetNode} hS:{___m_hoverInstance.id.NetSegment}");
                 if (MITE.AlignMode == MITE.AlignModes.Height)
                 {
                     MITE.AlignMode = MITE.AlignModes.Off;

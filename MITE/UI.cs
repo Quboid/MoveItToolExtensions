@@ -55,6 +55,7 @@ namespace MITE
                     if (MITE.AlignMode == MITE.AlignModes.Individual)
                     {
                         MITE.AlignMode = MITE.AlignModes.Off;
+                        MoveItTool.instance.toolState = MoveItTool.ToolState.Default;
                     }
                     else
                     {
@@ -62,6 +63,7 @@ namespace MITE
                         {
                             MoveItTool.instance.StopCloning();
                         }
+                        MoveItTool.instance.toolState = MoveItTool.ToolState.AligningHeights;
 
                         if (Action.selection.Count > 0)
                         {
@@ -75,6 +77,7 @@ namespace MITE
                     if (MITE.AlignMode == MITE.AlignModes.Group)
                     {
                         MITE.AlignMode = MITE.AlignModes.Off;
+                        MoveItTool.instance.toolState = MoveItTool.ToolState.Default;
                     }
                     else
                     {
@@ -82,6 +85,7 @@ namespace MITE
                         {
                             MoveItTool.instance.StopCloning();
                         }
+                        MoveItTool.instance.toolState = MoveItTool.ToolState.AligningHeights;
 
                         if (Action.selection.Count > 0)
                         {
