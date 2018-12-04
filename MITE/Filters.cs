@@ -210,9 +210,9 @@ namespace MITE
         }
 
 
-        public static bool Filter(BuildingInfo info)
+        public static bool Filter(BuildingInfo info, bool isHover = false)
         {
-            if (!MoveItTool.marqueeSelection)
+            if (isHover)
             {
                 if (MITE.Settings.PillarsAsNotBuildings)
                 {
@@ -229,7 +229,7 @@ namespace MITE
                 }
                 if (MITE.Settings.PylonsAsNotBuildings)
                 {
-                    //Debug.Log($"SINGLE-Py m_class.name:{info.m_class.name}");
+                    //Debug.Log($"SINGLE-Py AI type:{info.GetAI().GetType()}");
                     if (Array.Exists(PylonAITypes, s => s.Equals(info.GetAI().GetType())))
                     {
                         if (Event.current.alt)

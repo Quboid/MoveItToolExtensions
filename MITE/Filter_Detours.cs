@@ -61,13 +61,8 @@ namespace MITE
 
             float smallestDist = 640000f;
 
-
-            //int c = 0;
             do
             {
-                //c++;
-                //if (c > 1) Debug.Log($"FILTER LOOP RESTARTED ({c})");
-
                 int gridMinX = Mathf.Max((int)((location.x - 16f) / 64f + 135f) - 1, 0);
                 int gridMinZ = Mathf.Max((int)((location.z - 16f) / 64f + 135f) - 1, 0);
                 int gridMaxX = Mathf.Min((int)((location.x + 16f) / 64f + 135f) + 1, 269);
@@ -79,18 +74,15 @@ namespace MITE
                     {
                         if (selectBuilding || selectSurfaces)
                         {
-                            //if (c > 1) Debug.Log($"H-({i * 270 + j}) {i},{j}");
                             ushort building = BuildingManager.instance.m_buildingGrid[i * 270 + j];
-                            //if (c > 1) Debug.Log($"I-({i * 270 + j})");
                             int count = 0;
                             while (building != 0u)
                             {
-                                //if (c > 1) Debug.Log($"C - Repeat:{_repeatSearch} ({c}),B:{building}");
                                 if (MITE.StepOver.isValidB(building) && Detour_Utils.IsBuildingValid(ref buildingBuffer[building], itemLayers) && buildingBuffer[building].RayCast(building, ray, out float t) && t < smallestDist)
                                 {
                                     //Debug.Log($"Building:{building}");
 
-                                    if (Filters.Filter(buildingBuffer[building].Info))
+                                    if (Filters.Filter(buildingBuffer[building].Info, true))
                                     {
                                         id.Building = Building.FindParentBuilding(building);
                                         if (id.Building == 0) id.Building = building;
@@ -113,7 +105,6 @@ namespace MITE
                             int count = 0;
                             while (prop != 0u)
                             {
-                                //Debug.Log("D");
                                 if (MITE.StepOver.isValidP(prop) && Filters.Filter(propBuffer[prop].Info) && MITE.StepOver.isValidP(prop))
                                 {
                                     //Debug.Log($"Prop:{prop}");
@@ -139,7 +130,6 @@ namespace MITE
                             int count = 0;
                             while (node != 0u)
                             {
-                                //Debug.Log("E");
                                 if (MITE.StepOver.isValidN(node) && Detour_Utils.IsNodeValid(ref nodeBuffer[node], itemLayers) && Detour_Utils.RayCastNode(ref nodeBuffer[node], ray, -1000f, out float t, out float priority) && t < smallestDist)
                                 {
                                     //Debug.Log($"Node:{node}");
@@ -182,7 +172,6 @@ namespace MITE
                             int count = 0;
                             while (segment != 0u)
                             {
-                                //Debug.Log("F");
                                 if (MITE.StepOver.isValidS(segment) && Detour_Utils.IsSegmentValid(ref segmentBuffer[segment], itemLayers) &&
                                     segmentBuffer[segment].RayCast(segment, ray, -1000f, false, out float t, out float priority) && t < smallestDist)
                                 {
@@ -243,7 +232,6 @@ namespace MITE
                             int count = 0;
                             while (tree != 0)
                             {
-                                //Debug.Log("G");
                                 if (MITE.StepOver.isValidT(tree) && treeBuffer[tree].RayCast(tree, ray, out float t, out float targetSqr) && t < smallestDist)
                                 {
                                     id.Tree = tree;
@@ -261,15 +249,13 @@ namespace MITE
                 }
                 _repeatSearch = false;
 
-                if (Event.current.Equals(Event.KeyboardEvent("^n")))
+                if (Event.current.Equals(Event.KeyboardEvent("^tab")))
                 {
                     if (!_stepProcessed)
                     {
-                        //Debug.Log("A");
                         MITE.StepOver.Add(id);
                         _stepProcessed = true;
                         _repeatSearch = true;
-                        //Debug.Log("B");
                     }
                 }
                 else

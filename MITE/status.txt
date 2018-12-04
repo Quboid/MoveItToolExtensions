@@ -1,6 +1,0 @@
-﻿
-Todo:
-Option to collapse Align Tools menu
-
-Bugs:
-MITE Align tools don't use white hover

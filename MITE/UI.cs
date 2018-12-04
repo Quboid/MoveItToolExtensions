@@ -48,6 +48,7 @@ namespace MITE
                             MITE.AlignMode = MITE.AlignModes.Height;
                         }
                     }
+                    if (MITE.Settings.AutoCollapseAlignTools) AlignToolsPanel.isVisible = false;
                     UpdateAlignTools();
                     break;
 
@@ -70,6 +71,7 @@ namespace MITE
                             MITE.AlignMode = MITE.AlignModes.Individual;
                         }
                     }
+                    if (MITE.Settings.AutoCollapseAlignTools) AlignToolsPanel.isVisible = false;
                     UpdateAlignTools();
                     break;
 
@@ -92,6 +94,7 @@ namespace MITE
                             MITE.AlignMode = MITE.AlignModes.Group;
                         }
                     }
+                    if (MITE.Settings.AutoCollapseAlignTools) AlignToolsPanel.isVisible = false;
                     UpdateAlignTools();
                     break;
 
@@ -108,6 +111,7 @@ namespace MITE
                     ActionQueue.instance.Push(action);
                     ActionQueue.instance.Do();
                     MITE.DeactivateAlignTool();
+                    if (MITE.Settings.AutoCollapseAlignTools) AlignToolsPanel.isVisible = false;
                     UpdateAlignTools();
                     break;
             }

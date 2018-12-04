@@ -70,7 +70,6 @@ namespace MITE
     {
             if (Input.mousePosition != MousePosition)
             {
-                //Debug.Log($"Clearing Buffer");
                 active = false;
                 buffer.Clear();
                 return true;
@@ -91,13 +90,12 @@ namespace MITE
             }
             if (buffer.Contains(id))
             {
-                //Debug.Log($"Already exists ({id.Building},{id.Prop},{id.Tree},{id.NetNode},{id.NetSegment})");
                 return;
             }
             MousePosition = Input.mousePosition;
-            //Debug.Log($"Adding ({id.Building},{id.Prop},{id.Tree},{id.NetNode},{id.NetSegment})");
             buffer.Add(id);
 
+            //Debug.Log($"Adding ({id.Building},{id.Prop},{id.Tree},{id.NetNode},{id.NetSegment})");
             //string msg = $"Id:{id.Building},{id.Prop},{id.Tree},{id.NetNode},{id.NetSegment}, Buffer ({buffer.Count} elements):\n";
             //foreach (InstanceID b in buffer)
             //{

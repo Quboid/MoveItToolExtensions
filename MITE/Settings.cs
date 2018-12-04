@@ -13,8 +13,9 @@ namespace MITE
         public bool ExtraAsSurfaces = true;
         public bool DocksAsSurfaces = true;
         public bool BrushesAsSurfaces = true;
-        public bool PillarsAsNotBuildings = true;
-        public bool PylonsAsNotBuildings = true;
+        public bool PillarsAsNotBuildings = false;
+        public bool PylonsAsNotBuildings = false;
+        public bool AutoCollapseAlignTools = false;
         public bool ShowDebugPanel = false;
 
         public Settings() { }
@@ -55,8 +56,8 @@ namespace MITE
 
         public void OnSettingsUI(UIHelperBase helper)
         {
-            helper.AddSpace(20);
             UICheckBox cb;
+            helper.AddSpace(20);
             UIHelper group = (UIHelper)helper.AddGroup("Recognise as surfaces:");
             cb = (UICheckBox)group.AddCheckbox("Ploppable asphalt decals", MITE.Settings.DecalsAsSurfaces, (i) =>
             {
@@ -89,10 +90,18 @@ namespace MITE
             cb.name = "MITE_PylonsAsNotBuildings";
             UIPanel groupPanel = (UIPanel)group.self;
             UILabel note = groupPanel.AddUIComponent<UILabel>();
-            note.text = "\nNote: Items can be separately selected by holding Alt. Disable to marquee select these buildings.";
+            note.text = "\nNote: Items can be separately selected by holding Alt. Disable\nto marquee select these buildings.";
             helper.AddSpace(20);
-            group = (UIHelper)helper.AddGroup("Advanced Options:");
-            cb = (UICheckBox)group.AddCheckbox("Show MITE debug panel\n(Affects performance, do not enable unless you have a specific reason)", MITE.Settings.ShowDebugPanel, (i) =>
+            group = (UIHelper)helper.AddGroup("Additional Options:");
+            cb = (UICheckBox)group.AddCheckbox("Automatically close the Align Tools menu after choosing a tool", MITE.Settings.AutoCollapseAlignTools, (i) =>
+            {
+                MITE.Settings.AutoCollapseAlignTools = i;
+                UI.AlignToolsPanel.isVisible = false;
+                UI.UpdateAlignTools();
+                SaveConfiguration();
+            });
+            cb.name = "MITE_DebugPanel_Toggle";
+            cb = (UICheckBox)group.AddCheckbox("\nShow MITE debug panel\n(Affects performance, do not enable unless you have a specific reason)", MITE.Settings.ShowDebugPanel, (i) =>
             {
                 MITE.Settings.ShowDebugPanel = i;
                 UI.DbgPanel.Visible(i);
