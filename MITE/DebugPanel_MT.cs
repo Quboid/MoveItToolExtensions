@@ -1,8 +1,7 @@
-﻿//using ModTools;
-using Harmony;
-using ColossalFramework.UI;
+﻿using ColossalFramework.UI;
 using UnityEngine;
 using System;
+using System.Reflection;
 
 namespace MITE
 {
@@ -10,101 +9,123 @@ namespace MITE
     {
         public InstanceID Id { get; set; }
         public UIPanel Parent { get; set; }
-
         public UIButton btn;
+        private readonly object ModTools, SceneExplorer;
+        private readonly Type tModTools, tSceneExplorer, tReferenceChain;
+        private readonly BindingFlags flags = BindingFlags.Public | BindingFlags.Instance;
+        private object rcBuildings, rcProps, rcTrees, rcNodes, rcSegments;
 
         public DebugPanel_ModTools(UIPanel parent)
         {
-            if (MITE.Enable_ModTools)
+            try
             {
-                Id = InstanceID.Empty;
-                Parent = parent;
-                btn = parent.AddUIComponent<UIButton>();
-                btn.name = "MITE_ToModTools";
-                btn.text = ">";
-                btn.tooltip = "Open item in ModTools' scene explorer";
-                btn.size = new Vector2(16, 16);
-                btn.relativePosition = new Vector3(parent.width - 26, 4);
-
-                try
+                Assembly mtAssembly = null;
+                foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
                 {
-                    Traverse t = Traverse.CreateWithType("000_ModTools");
-                    Debug.Log($"{t}");
+                    if (assembly.FullName.Length >= 12 && assembly.FullName.Substring(0, 12) == "000_ModTools")
+                    {
+                        mtAssembly = assembly;
+                        break;
+                    }
                 }
-                catch (Exception ex)
+                if (mtAssembly == null)
                 {
-                    Debug.Log(ex);
+                    return;
                 }
 
-                //}
+                tModTools = mtAssembly.GetType("ModTools.ModTools");
+                tSceneExplorer = mtAssembly.GetType("ModTool.SceneExplorer");
+                tReferenceChain = mtAssembly.GetType("ModTools.ReferenceChain");
 
-                // Disabled ModTools Inegration
-                /*
-                btn.eventClicked += _toModTools;
+                ModTools = tModTools.GetField("instance", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
+                SceneExplorer = tModTools.GetField("sceneExplorer", BindingFlags.Public | BindingFlags.Instance).GetValue(ModTools);
 
-                System.Type SceneExplorer = Traverse.Create(ModTools.ModTools.Instance).Field("SceneExplorer").GetType();
-                _ModTools = Traverse.Create(ModTools.ModTools.Instance).Field("sceneExplorer").GetValue<SceneExplorer>();
+                //Debug.Log($"ModTools Type: {tModTools}, Fields:{tModTools.GetFields().Length}, Props:{tModTools.GetProperties().Length}, Methods:{tModTools.GetMethods().Length}");
+                //Debug.Log($"{ModTools} ({ModTools.GetType()})\n{SceneExplorer} ({SceneExplorer.GetType()})");
 
-                buildingsBufferRefChain = new ReferenceChain()
-                    .Add(BuildingManager.instance.gameObject)
-                    .Add(BuildingManager.instance)
-                    .Add(typeof(BuildingManager).GetField("m_buildings"))
-                    .Add(typeof(Array16<Building>).GetField("m_buffer"));
-                propsBufferRefChain = new ReferenceChain()
-                    .Add(PropManager.instance.gameObject)
-                    .Add(PropManager.instance)
-                    .Add(typeof(PropManager).GetField("m_props"))
-                    .Add(typeof(Array16<PropInstance>).GetField("m_buffer"));
-                treesBufferRefChain = new ReferenceChain()
-                    .Add(TreeManager.instance.gameObject)
-                    .Add(TreeManager.instance)
-                    .Add(typeof(TreeManager).GetField("m_trees"))
-                    .Add(typeof(Array32<TreeInstance>).GetField("m_buffer"));
-                nodesBufferRefChain = new ReferenceChain()
-                    .Add(NetManager.instance.gameObject)
-                    .Add(NetManager.instance)
-                    .Add(typeof(NetManager).GetField("m_nodes"))
-                    .Add(typeof(Array16<NetNode>).GetField("m_buffer"));
-                segmentsBufferRefChain = new ReferenceChain()
-                    .Add(NetManager.instance.gameObject)
-                    .Add(NetManager.instance)
-                    .Add(typeof(NetManager).GetField("m_segments"))
-                    .Add(typeof(Array16<NetSegment>).GetField("m_buffer"));
+                rcBuildings = Activator.CreateInstance(tReferenceChain);
+                rcBuildings = tReferenceChain.GetMethod("Add", flags, null, new Type[] { typeof(GameObject) }, null).Invoke(rcBuildings, new object[] { BuildingManager.instance.gameObject });
+                rcBuildings = tReferenceChain.GetMethod("Add", flags, null, new Type[] { typeof(BuildingManager) }, null).Invoke(rcBuildings, new object[] { BuildingManager.instance });
+                rcBuildings = tReferenceChain.GetMethod("Add", flags, null, new Type[] { typeof(FieldInfo) }, null).Invoke(rcBuildings, new object[] { typeof(BuildingManager).GetField("m_buildings") });
+                rcBuildings = tReferenceChain.GetMethod("Add", flags, null, new Type[] { typeof(FieldInfo) }, null).Invoke(rcBuildings, new object[] { typeof(Array16<Building>).GetField("m_buffer") });
+                //Debug.Log($"rcBuildings:{rcBuildings}");
+
+                rcProps = Activator.CreateInstance(tReferenceChain);
+                rcProps = tReferenceChain.GetMethod("Ad", flags, null, new Type[] { typeof(GameObject) }, null).Invoke(rcProps, new object[] { PropManager.instance.gameObject });
+                rcProps = tReferenceChain.GetMethod("Add", flags, null, new Type[] { typeof(PropManager) }, null).Invoke(rcProps, new object[] { PropManager.instance });
+                rcProps = tReferenceChain.GetMethod("Add", flags, null, new Type[] { typeof(FieldInfo) }, null).Invoke(rcProps, new object[] { typeof(PropManager).GetField("m_props") });
+                rcProps = tReferenceChain.GetMethod("Add", flags, null, new Type[] { typeof(FieldInfo) }, null).Invoke(rcProps, new object[] { typeof(Array16<PropInstance>).GetField("m_buffer") });
+                //Debug.Log($"rcProps:{rcProps}");
+
+                rcTrees = Activator.CreateInstance(tReferenceChain);
+                rcTrees = tReferenceChain.GetMethod("Add", flags, null, new Type[] { typeof(GameObject) }, null).Invoke(rcTrees, new object[] { TreeManager.instance.gameObject });
+                rcTrees = tReferenceChain.GetMethod("Add", flags, null, new Type[] { typeof(TreeManager) }, null).Invoke(rcTrees, new object[] { TreeManager.instance });
+                rcTrees = tReferenceChain.GetMethod("Add", flags, null, new Type[] { typeof(FieldInfo) }, null).Invoke(rcTrees, new object[] { typeof(TreeManager).GetField("m_trees") });
+                rcTrees = tReferenceChain.GetMethod("Add", flags, null, new Type[] { typeof(FieldInfo) }, null).Invoke(rcTrees, new object[] { typeof(Array32<TreeInstance>).GetField("m_buffer") });
+                //Debug.Log($"rcTrees:{rcTrees}");
+
+                rcNodes = Activator.CreateInstance(tReferenceChain);
+                rcNodes = tReferenceChain.GetMethod("Add", flags, null, new Type[] { typeof(GameObject) }, null).Invoke(rcNodes, new object[] { NetManager.instance.gameObject });
+                rcNodes = tReferenceChain.GetMethod("Add", flags, null, new Type[] { typeof(NetManager) }, null).Invoke(rcNodes, new object[] { NetManager.instance });
+                rcSegments = tReferenceChain.GetMethod("Add", flags, null, new Type[] { typeof(FieldInfo) }, null).Invoke(rcNodes, new object[] { typeof(NetManager).GetField("m_segments") });
+                rcSegments = tReferenceChain.GetMethod("Add", flags, null, new Type[] { typeof(FieldInfo) }, null).Invoke(rcSegments, new object[] { typeof(Array16<NetSegment>).GetField("m_buffer") });
+                rcNodes = tReferenceChain.GetMethod("Add", flags, null, new Type[] { typeof(FieldInfo) }, null).Invoke(rcNodes, new object[] { typeof(NetManager).GetField("m_nodes") });
+                rcNodes = tReferenceChain.GetMethod("Add", flags, null, new Type[] { typeof(FieldInfo) }, null).Invoke(rcNodes, new object[] { typeof(Array16<NetNode>).GetField("m_buffer") });
+                //Debug.Log($"rcNodes:{rcNodes}\nrcSegments:{rcSegments}");
             }
-        }
+            catch (ReflectionTypeLoadException)
+            {
+                SceneExplorer = null;
+                Debug.Log($"MITE failed to integrate ModTools");
+            }
 
-        private SceneExplorer _ModTools = null;
-        private ReferenceChain buildingsBufferRefChain, propsBufferRefChain, treesBufferRefChain, nodesBufferRefChain, segmentsBufferRefChain;
+            Id = InstanceID.Empty;
+            Parent = parent;
+            btn = parent.AddUIComponent<UIButton>();
+            btn.name = "MITE_ToModTools";
+            btn.text = ">";
+            btn.tooltip = "Open item in ModTools' scene explorer";
+            btn.size = new Vector2(16, 16);
+            btn.relativePosition = new Vector3(parent.width - 20, parent.height - 20);
+            btn.eventClicked += _toModTools;
+        }
 
         private void _toModTools(UIComponent c, UIMouseEventParameter p)
         {
-            if (_ModTools == null)
+            if (SceneExplorer == null)
             {
                 return;
             }
 
+            object rc;
+
             if (Id.Building > 0)
             {
-                _ModTools.ExpandFromRefChain(buildingsBufferRefChain.Add(Id.Building));
+                rc = tReferenceChain.GetMethod("Add", flags, null, new Type[] { typeof(ushort) }, null).Invoke(rcBuildings, new object[] { Id.Building });
+                tSceneExplorer.GetMethod("ExpandFromRefChain", flags, null, new Type[] { tReferenceChain }, null).Invoke(SceneExplorer, new object[] { rc });
             }
             else if (Id.Prop > 0)
             {
-                _ModTools.ExpandFromRefChain(propsBufferRefChain.Add(Id.Prop));
+                rc = tReferenceChain.GetMethod("Add", flags, null, new Type[] { typeof(ushort) }, null).Invoke(rcProps, new object[] { Id.Prop });
+                tSceneExplorer.GetMethod("ExpandFromRefChain", flags, null, new Type[] { tReferenceChain }, null).Invoke(SceneExplorer, new object[] { rc });
             }
             else if (Id.Tree > 0)
             {
-                _ModTools.ExpandFromRefChain(treesBufferRefChain.Add((int)Id.Tree));
+                rc = tReferenceChain.GetMethod("Add", flags, null, new Type[] { typeof(uint) }, null).Invoke(rcTrees, new object[] { Id.Tree });
+                tSceneExplorer.GetMethod("ExpandFromRefChain", flags, null, new Type[] { tReferenceChain }, null).Invoke(SceneExplorer, new object[] { rc });
             }
             else if (Id.NetNode > 0)
             {
-                _ModTools.ExpandFromRefChain(nodesBufferRefChain.Add(Id.NetNode));
+                rc = tReferenceChain.GetMethod("Add", flags, null, new Type[] { typeof(ushort) }, null).Invoke(rcNodes, new object[] { Id.NetNode });
+                tSceneExplorer.GetMethod("ExpandFromRefChain", flags, null, new Type[] { tReferenceChain }, null).Invoke(SceneExplorer, new object[] { rc });
             }
             else if (Id.NetSegment > 0)
             {
-                _ModTools.ExpandFromRefChain(segmentsBufferRefChain.Add(Id.NetSegment));
+                rc = tReferenceChain.GetMethod("Add", flags, null, new Type[] { typeof(ushort) }, null).Invoke(rcSegments, new object[] { Id.NetSegment });
+                tSceneExplorer.GetMethod("ExpandFromRefChain", flags, null, new Type[] { tReferenceChain }, null).Invoke(SceneExplorer, new object[] { rc });
             }
-            _ModTools.visible = true;*/
-            }
+            tSceneExplorer.GetProperty("visible", BindingFlags.Public | BindingFlags.Instance).SetValue(SceneExplorer, true, null);
         }
     }
 }
+

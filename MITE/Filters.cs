@@ -214,6 +214,7 @@ namespace MITE
         {
             if (isHover)
             {
+                // Select P&P on hover with Alt
                 if (MITE.Settings.PillarsAsNotBuildings)
                 {
                     //Debug.Log($"SINGLE-Pi m_class.name:{info.m_class.name}");
@@ -240,7 +241,6 @@ namespace MITE
                         return false;
                     }
                 }
-                return true;
             }
 
             if (IsSurface(info)) {
@@ -250,6 +250,7 @@ namespace MITE
 
             if (MoveItTool.filterBuildings)
             {
+                // Filter pillars and pylons out of select
                 if (MITE.Settings.PillarsAsNotBuildings)
                 {
                     //Debug.Log($"MARQUEE m_class.name:{info.m_class.name}");

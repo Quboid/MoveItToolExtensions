@@ -1,6 +1,5 @@
 ﻿using ColossalFramework.Plugins;
 using ColossalFramework.UI;
-using MoveIt;
 using System;
 using System.Linq;
 using UnityEngine;
@@ -125,7 +124,7 @@ namespace MITE
             Panel.name = "MITE_DebugPanel";
             Panel.atlas = ResourceLoader.GetAtlas("Ingame");
             Panel.backgroundSprite = "SubcategoriesPanel";
-            Panel.size = new Vector2(260, 61);
+            Panel.size = new Vector2(260, 62);
             Panel.absolutePosition = new Vector3(Panel.GetUIView().GetScreenResolution().x - 330, 3);
             Panel.clipChildren = true;
             Panel.isVisible = MITE.Settings.ShowDebugPanel;
@@ -133,7 +132,7 @@ namespace MITE
             HoverLarge = Panel.AddUIComponent<UILabel>();
             HoverLarge.textScale = 0.8f;
             HoverLarge.text = "None";
-            HoverLarge.relativePosition = new Vector3(5, 6);
+            HoverLarge.relativePosition = new Vector3(6, 7);
             HoverLarge.width = HoverLarge.parent.width - 20;
             HoverLarge.clipChildren = true;
             HoverLarge.useDropShadow = true;
@@ -142,7 +141,7 @@ namespace MITE
             HoverSmall = Panel.AddUIComponent<UILabel>();
             HoverSmall.textScale = 0.65f;
             HoverSmall.text = "No item being hovered\n ";
-            HoverSmall.relativePosition = new Vector3(5, 23);
+            HoverSmall.relativePosition = new Vector3(5, 24);
             HoverSmall.width = HoverSmall.parent.width - 20;
             HoverSmall.clipChildren = true;
             HoverSmall.useDropShadow = true;
