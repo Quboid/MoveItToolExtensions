@@ -316,6 +316,10 @@ namespace MITE
 
         public static bool Filter(NetNode node)
         {
+            if (MITE.AlignMode == MITE.AlignModes.Group || MITE.AlignMode == MITE.AlignModes.Individual)
+            {
+                return false;
+            }
             return _networkFilter(node.Info);
         }
 

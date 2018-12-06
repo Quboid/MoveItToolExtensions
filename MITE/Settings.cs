@@ -1,4 +1,6 @@
-﻿using ColossalFramework.UI;
+﻿using ColossalFramework;
+using ColossalFramework.UI;
+using ColossalFramework.IO;
 using ICities;
 using System;
 using System.IO;
@@ -7,8 +9,57 @@ using UnityEngine;
 
 namespace MITE
 {
+    [Serializable()]
+    public class SerializableShortcut
+    {
+        public KeyCode Key;
+        public bool Control;
+        public bool Alt;
+        public bool Shift;
+
+        public SerializableShortcut() { }
+
+        public SerializableShortcut(KeyCode k, bool c, bool s, bool a)
+        {
+            Key = k;
+            Control = c;
+            Shift = s;
+            Alt = a;
+        }
+
+        public override string ToString()
+        {
+            return $"Key:{Key}, C:{Control} S:{Shift} A:{Alt}";
+        }
+
+        [XmlIgnore]
+        public SavedInputKey SIK {
+            get => new SavedInputKey("SIK", Settings.SettingsFileLocation, SavedInputKey.Encode(this.Key, this.Control, this.Shift, this.Alt), true);
+            set {
+                this.Key = value.Key;
+                this.Control = value.Control;
+                this.Shift = value.Shift;
+                this.Alt = value.Alt;
+            }
+        }
+
+        public string getEventKey()
+        {
+            string str = "";
+
+            if (Control) str += "^";
+            if (Shift) str += "#";
+            if (Alt) str += "&";
+
+            return str + Key;
+        }
+    }
+
     public class Settings
     {
+        [XmlIgnore]
+        public static readonly string SettingsFileLocation = Path.Combine(DataLocation.localApplicationData, "MITE.xml");
+
         public bool DecalsAsSurfaces = true;
         public bool ExtraAsSurfaces = true;
         public bool DocksAsSurfaces = true;
@@ -16,6 +67,8 @@ namespace MITE
         public bool PillarsAsNotBuildings = false;
         public bool PylonsAsNotBuildings = false;
         public bool AutoCollapseAlignTools = false;
+        public SerializableShortcut keyStepOver = new SerializableShortcut(KeyCode.Tab, true, false, false);
+        //public SavedInputKey keyStepOver = new SavedInputKey("stepOver", SettingsClass.SettingsFileLocation, SavedInputKey.Encode(KeyCode.Tab, true, false, false), true);
         public bool ShowDebugPanel = false;
 
         public Settings() { }
@@ -25,7 +78,7 @@ namespace MITE
         public void SaveConfiguration()
         {
             var serializer = new XmlSerializer(typeof(Settings));
-            using (var writer = new StreamWriter(MITE.settingsFilePath))
+            using (var writer = new StreamWriter(SettingsFileLocation))
             {
                 MITE.Settings.OnPreSerialize();
                 serializer.Serialize(writer, MITE.Settings);
@@ -35,12 +88,11 @@ namespace MITE
 
         public static Settings LoadConfiguration()
         {
-            var fileName = MITE.settingsFilePath;
-            if (!File.Exists(fileName)) return null;
+            if (!File.Exists(SettingsFileLocation)) return null;
             var serializer = new XmlSerializer(typeof(Settings));
             try
             {
-                using (var reader = new StreamReader(fileName))
+                using (var reader = new StreamReader(SettingsFileLocation))
                 {
                     var config = serializer.Deserialize(reader) as Settings;
                     return config;
@@ -48,7 +100,7 @@ namespace MITE
             }
             catch (Exception ex)
             {
-                Debug.Log($"[MITE]: Error Parsing {fileName}: {ex}");
+                Debug.Log($"[MITE]: Error Parsing {SettingsFileLocation}: {ex}");
                 return null;
             }
         }
@@ -57,6 +109,7 @@ namespace MITE
         public void OnSettingsUI(UIHelperBase helper)
         {
             UICheckBox cb;
+
             helper.AddSpace(20);
             UIHelper group = (UIHelper)helper.AddGroup("Recognise as surfaces:");
             cb = (UICheckBox)group.AddCheckbox("Ploppable asphalt decals", MITE.Settings.DecalsAsSurfaces, (i) =>
@@ -93,22 +146,34 @@ namespace MITE
             note.text = "\nNote: Items can be separately selected by holding Alt. Disable\nto marquee select these buildings.";
             helper.AddSpace(20);
             group = (UIHelper)helper.AddGroup("Additional Options:");
+            UIPanel panel = group.self as UIPanel;
+
+            panel.gameObject.AddComponent<OptionsKeymapping>();
+            group.AddSpace(3);
+
             cb = (UICheckBox)group.AddCheckbox("Automatically close the Align Tools menu after choosing a tool", MITE.Settings.AutoCollapseAlignTools, (i) =>
             {
                 MITE.Settings.AutoCollapseAlignTools = i;
-                UI.AlignToolsPanel.isVisible = false;
-                UI.UpdateAlignTools();
                 SaveConfiguration();
+                if (UI.AlignToolsPanel != null)
+                {
+                    UI.AlignToolsPanel.isVisible = false;
+                    UI.UpdateAlignTools();
+                }
             });
-            cb.name = "MITE_DebugPanel_Toggle";
-            cb = (UICheckBox)group.AddCheckbox("\nShow MITE debug panel\n(Affects performance, do not enable unless you have a specific reason)", MITE.Settings.ShowDebugPanel, (i) =>
+            cb.name = "MITE_AutoCollapse_AlignTools";
+            group.AddSpace(3);
+            cb = (UICheckBox)group.AddCheckbox("Show MITE debug panel\n(Affects performance, do not enable unless you have a specific reason)", MITE.Settings.ShowDebugPanel, (i) =>
             {
                 MITE.Settings.ShowDebugPanel = i;
-                UI.DbgPanel.Visible(i);
                 SaveConfiguration();
+                if (UI.DbgPanel != null)
+                {
+                    UI.DbgPanel.Visible(i);
+                }
             });
             cb.name = "MITE_DebugPanel_Toggle";
-            helper.AddSpace(20);
+            helper.AddSpace(10);
         }
     }
 }

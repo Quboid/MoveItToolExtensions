@@ -249,7 +249,13 @@ namespace MITE
                 }
                 _repeatSearch = false;
 
-                if (Event.current.Equals(Event.KeyboardEvent("^tab")))
+                //MITE.Settings.keyStepOver.getEventKey()
+                //if (Event.current.type == EventType.KeyUp)
+                //{ 
+                //    Debug.Log($"{Event.current} - key:{MITE.Settings.keyStepOver.getEventKey()}");
+                //}
+
+                if (Event.current.Equals(Event.KeyboardEvent(MITE.Settings.keyStepOver.getEventKey())))
                 {
                     if (!_stepProcessed)
                     {
@@ -265,6 +271,7 @@ namespace MITE
             }
             while (_repeatSearch);
 
+            //Debug.Log("SO Key:" + MITE.Settings.keyStepOver.getEventKey());
             //Debug.Log($"ID=({id.Building},{id.Prop},{id.NetNode},{id.NetSegment},{id.Tree})");
             if (UI.DbgPanel != null)
             {

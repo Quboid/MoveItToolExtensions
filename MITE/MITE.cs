@@ -1,4 +1,5 @@
-﻿using ColossalFramework.IO;
+﻿using ColossalFramework;
+using ColossalFramework.IO;
 using Harmony;
 using ICities;
 using MoveIt;
@@ -18,7 +19,6 @@ namespace MITE
 
         public string Name => "Move It Tool Extensions";
         public string Description => "Extra tools and filters for Move It!";
-        internal static readonly string settingsFilePath = Path.Combine(DataLocation.localApplicationData, "MITE.xml");
 
         public static bool filterSurfaces = true;
         public static bool filterNetworks = false;
@@ -63,35 +63,9 @@ namespace MITE
         public override void OnLevelLoaded(LoadMode loadMode)
         {
             HarmonyInstance harmony = GetHarmonyInstance();
-            StepOver = new StepOver();
-
-            //BindingFlags flags = new BindingFlags();
-
-            //var orig = typeof(MoveItTool).GetMethod("RaycastHoverInstance");
-            //var prefix = typeof(MIT_RaycastHoverInstance).GetMethod("Prefix");
-            //harmony.Patch(orig, new HarmonyMethod(prefix));
-
-            //orig = typeof(MoveItTool).GetMethod("GetMarqueeList");
-            //var postfix = typeof(MIT_GetMarqueeList).GetMethod("Postfix");
-            //harmony.Patch(orig, null, new HarmonyMethod(postfix));
-
-            //orig = typeof(MoveItTool).GetMethod("StopAligningHeights");
-            //prefix = typeof(MIT_StopAligningHeights).GetMethod("Prefix");
-            //harmony.Patch(orig, new HarmonyMethod(prefix));
-
-            //orig = typeof(MoveItTool).GetMethod("StartAligningHeights");
-            //postfix = typeof(MIT_StatAligningHeights).GetMethod("Postfix");
-            //harmony.Patch(orig, null, new HarmonyMethod(postfix));
-
-            //orig = typeof(MoveItTool).GetMethod("OnLeftClick");
-            //prefix = typeof(MIT_OnLeftClick).GetMethod("Prefix");
-            //harmony.Patch(orig, new HarmonyMethod(prefix));
-
-            //orig = typeof(UIToolOptionPanel).GetMethod("Start");
-            //postfix = typeof(UITOP_Start).GetMethod("Postfix");
-            //harmony.Patch(orig, null, new HarmonyMethod(postfix));
-
             harmony.PatchAll(Assembly.GetExecutingAssembly());
+
+            StepOver = new StepOver();
         }
 
 

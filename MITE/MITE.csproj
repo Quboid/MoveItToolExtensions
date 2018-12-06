@@ -69,6 +69,7 @@
     <Compile Include="Actions\AlignRotationSuite.cs" />
     <Compile Include="Detours.cs" />
     <Compile Include="Moveable\MoveableBuilding.cs" />
+    <Compile Include="Settings_KB.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ResourceLoader.cs" />
     <Compile Include="Settings.cs" />
