@@ -1,0 +1,15 @@
+[h1]MITE - Move It Tool Extensions[/h1]
+Adds features to the wonderful [url=]Move It![/url] mod including extra filters, alignment tools and more!
+
+As this is an extension, [url=]Move It![/url] is required. This can be safely disabled at any time.
+
+[h1]Features[/h1]
+
+Toggle all marquee selection filters on and off by double-clicking on the Marquee Selection button
+
+Step down selectable items - press Control+Tab to step over the currently high-lighted item to select the item below. When the mouse is moved, the stepped-over list is emptied. (Shortcut can be customised in MITE's options page.)
+
+[h1]Network Filters[/h1]
+
+[h1]Align Tools[/h1]
+MITE replaces [url=]Align Rotation for Move It[/url], please unsubscribe from Align Rotation.

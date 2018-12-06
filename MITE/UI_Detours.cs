@@ -203,7 +203,7 @@ namespace MITE
             UIButton alignGroup = UI.AlignButtons.GetValueSafe("AlignGroup");
             alignGroup.name = "AlignGroup";
             alignGroup.atlas = UI.GetIconsAtlas();
-            alignGroup.tooltip = "Align rotation all around single point";
+            alignGroup.tooltip = "Align As Group - rotate around a central point";
             alignGroup.playAudioEvents = true;
             alignGroup.size = new Vector2(36, 36);
             alignGroup.normalBgSprite = "OptionBase";
@@ -217,7 +217,7 @@ namespace MITE
             UIButton alignIndividual = UI.AlignButtons.GetValueSafe("AlignIndividual");
             alignIndividual.name = "AlignIndividual";
             alignIndividual.atlas = UI.GetIconsAtlas();
-            alignIndividual.tooltip = "Align rotation of selected items";
+            alignIndividual.tooltip = "Align In-Place - rotate selected items";
             alignIndividual.playAudioEvents = true;
             alignIndividual.size = new Vector2(36, 36);
             alignIndividual.normalBgSprite = "OptionBase";

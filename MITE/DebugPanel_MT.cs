@@ -13,7 +13,7 @@ namespace MITE
         private readonly object ModTools, SceneExplorer;
         private readonly Type tModTools, tSceneExplorer, tReferenceChain;
         private readonly BindingFlags flags = BindingFlags.Public | BindingFlags.Instance;
-        private object rcBuildings, rcProps, rcTrees, rcNodes, rcSegments;
+        private readonly object rcBuildings, rcProps, rcTrees, rcNodes, rcSegments;
 
         public DebugPanel_ModTools(UIPanel parent)
         {
@@ -34,13 +34,14 @@ namespace MITE
                 }
 
                 tModTools = mtAssembly.GetType("ModTools.ModTools");
-                tSceneExplorer = mtAssembly.GetType("ModTool.SceneExplorer");
+                tSceneExplorer = mtAssembly.GetType("ModTools.SceneExplorer");
                 tReferenceChain = mtAssembly.GetType("ModTools.ReferenceChain");
 
                 ModTools = tModTools.GetField("instance", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
-                SceneExplorer = tModTools.GetField("sceneExplorer", BindingFlags.Public | BindingFlags.Instance).GetValue(ModTools);
+                SceneExplorer = tModTools.GetField("sceneExplorer", flags).GetValue(ModTools);
 
-                //Debug.Log($"ModTools Type: {tModTools}, Fields:{tModTools.GetFields().Length}, Props:{tModTools.GetProperties().Length}, Methods:{tModTools.GetMethods().Length}");
+                //Debug.Log($"\ntModTools:{tModTools}, tSceneExplorer:{tSceneExplorer}, tReferenceChain:{tReferenceChain}");
+                //Debug.Log($"Fields:{tModTools.GetFields().Length}, Props:{tModTools.GetProperties().Length}, Methods:{tModTools.GetMethods().Length}");
                 //Debug.Log($"{ModTools} ({ModTools.GetType()})\n{SceneExplorer} ({SceneExplorer.GetType()})");
 
                 rcBuildings = Activator.CreateInstance(tReferenceChain);
@@ -51,7 +52,7 @@ namespace MITE
                 //Debug.Log($"rcBuildings:{rcBuildings}");
 
                 rcProps = Activator.CreateInstance(tReferenceChain);
-                rcProps = tReferenceChain.GetMethod("Ad", flags, null, new Type[] { typeof(GameObject) }, null).Invoke(rcProps, new object[] { PropManager.instance.gameObject });
+                rcProps = tReferenceChain.GetMethod("Add", flags, null, new Type[] { typeof(GameObject) }, null).Invoke(rcProps, new object[] { PropManager.instance.gameObject });
                 rcProps = tReferenceChain.GetMethod("Add", flags, null, new Type[] { typeof(PropManager) }, null).Invoke(rcProps, new object[] { PropManager.instance });
                 rcProps = tReferenceChain.GetMethod("Add", flags, null, new Type[] { typeof(FieldInfo) }, null).Invoke(rcProps, new object[] { typeof(PropManager).GetField("m_props") });
                 rcProps = tReferenceChain.GetMethod("Add", flags, null, new Type[] { typeof(FieldInfo) }, null).Invoke(rcProps, new object[] { typeof(Array16<PropInstance>).GetField("m_buffer") });
@@ -76,7 +77,17 @@ namespace MITE
             catch (ReflectionTypeLoadException)
             {
                 SceneExplorer = null;
-                Debug.Log($"MITE failed to integrate ModTools");
+                Debug.Log($"MITE failed to integrate ModTools (ReflectionTypeLoadException)");
+            }
+            catch (NullReferenceException)
+            {
+                SceneExplorer = null;
+                Debug.Log($"MITE failed to integrate ModTools (NullReferenceException)");
+            }
+
+            if (SceneExplorer == null)
+            {
+                return;
             }
 
             Id = InstanceID.Empty;
@@ -84,10 +95,18 @@ namespace MITE
             btn = parent.AddUIComponent<UIButton>();
             btn.name = "MITE_ToModTools";
             btn.text = ">";
-            btn.tooltip = "Open item in ModTools' scene explorer";
-            btn.size = new Vector2(16, 16);
-            btn.relativePosition = new Vector3(parent.width - 20, parent.height - 20);
+            btn.textScale = 0.7f;
+            btn.tooltip = "Open in ModTools Scene Explorer";
+            btn.size = new Vector2(20, 20);
+            btn.textPadding = new RectOffset(2, 0, 5, 0);
+            btn.relativePosition = new Vector3(parent.width - 24, parent.height - 24);
             btn.eventClicked += _toModTools;
+
+            btn.atlas = ResourceLoader.GetAtlas("Ingame");
+            btn.normalBgSprite = "OptionBase";
+            btn.hoveredBgSprite = "OptionBaseHovered";
+            btn.pressedBgSprite = "OptionBasePressed";
+            btn.disabledBgSprite = "OptionBaseDisabled";
         }
 
         private void _toModTools(UIComponent c, UIMouseEventParameter p)
@@ -97,34 +116,47 @@ namespace MITE
                 return;
             }
 
-            object rc;
+            try
+            {
+                object rc;
+                Type[] t = new Type[] { tReferenceChain };
 
-            if (Id.Building > 0)
-            {
-                rc = tReferenceChain.GetMethod("Add", flags, null, new Type[] { typeof(ushort) }, null).Invoke(rcBuildings, new object[] { Id.Building });
-                tSceneExplorer.GetMethod("ExpandFromRefChain", flags, null, new Type[] { tReferenceChain }, null).Invoke(SceneExplorer, new object[] { rc });
+                if (Id.Building > 0)
+                {
+                    rc = tReferenceChain.GetMethod("Add", flags, null, new Type[] { typeof(ushort) }, null).Invoke(rcBuildings, new object[] { Id.Building });
+                    tSceneExplorer.GetMethod("ExpandFromRefChain", flags, null, t, null).Invoke(SceneExplorer, new object[] { rc });
+                }
+                else if (Id.Prop > 0)
+                {
+                    rc = tReferenceChain.GetMethod("Add", flags, null, new Type[] { typeof(ushort) }, null).Invoke(rcProps, new object[] { Id.Prop });
+                    tSceneExplorer.GetMethod("ExpandFromRefChain", flags, null, t, null).Invoke(SceneExplorer, new object[] { rc });
+                }
+                else if (Id.Tree > 0)
+                {
+                    rc = tReferenceChain.GetMethod("Add", flags, null, new Type[] { typeof(uint) }, null).Invoke(rcTrees, new object[] { Id.Tree });
+                    tSceneExplorer.GetMethod("ExpandFromRefChain", flags, null, t, null).Invoke(SceneExplorer, new object[] { rc });
+                }
+                else if (Id.NetNode > 0)
+                {
+                    rc = tReferenceChain.GetMethod("Add", flags, null, new Type[] { typeof(ushort) }, null).Invoke(rcNodes, new object[] { Id.NetNode });
+                    tSceneExplorer.GetMethod("ExpandFromRefChain", flags, null, t, null).Invoke(SceneExplorer, new object[] { rc });
+                }
+                else if (Id.NetSegment > 0)
+                {
+                    rc = tReferenceChain.GetMethod("Add", flags, null, new Type[] { typeof(ushort) }, null).Invoke(rcSegments, new object[] { Id.NetSegment });
+                    tSceneExplorer.GetMethod("ExpandFromRefChain", flags, null, t, null).Invoke(SceneExplorer, new object[] { rc });
+                }
+
+                tSceneExplorer.GetProperty("visible", BindingFlags.Public | BindingFlags.Instance).SetValue(SceneExplorer, true, null);
             }
-            else if (Id.Prop > 0)
+            catch (ReflectionTypeLoadException)
             {
-                rc = tReferenceChain.GetMethod("Add", flags, null, new Type[] { typeof(ushort) }, null).Invoke(rcProps, new object[] { Id.Prop });
-                tSceneExplorer.GetMethod("ExpandFromRefChain", flags, null, new Type[] { tReferenceChain }, null).Invoke(SceneExplorer, new object[] { rc });
+                Debug.Log($"MITE failed to call ModTools (ReflectionTypeLoadException)");
             }
-            else if (Id.Tree > 0)
+            catch (NullReferenceException)
             {
-                rc = tReferenceChain.GetMethod("Add", flags, null, new Type[] { typeof(uint) }, null).Invoke(rcTrees, new object[] { Id.Tree });
-                tSceneExplorer.GetMethod("ExpandFromRefChain", flags, null, new Type[] { tReferenceChain }, null).Invoke(SceneExplorer, new object[] { rc });
+                Debug.Log($"MITE failed to call ModTools (NullReferenceException)");
             }
-            else if (Id.NetNode > 0)
-            {
-                rc = tReferenceChain.GetMethod("Add", flags, null, new Type[] { typeof(ushort) }, null).Invoke(rcNodes, new object[] { Id.NetNode });
-                tSceneExplorer.GetMethod("ExpandFromRefChain", flags, null, new Type[] { tReferenceChain }, null).Invoke(SceneExplorer, new object[] { rc });
-            }
-            else if (Id.NetSegment > 0)
-            {
-                rc = tReferenceChain.GetMethod("Add", flags, null, new Type[] { typeof(ushort) }, null).Invoke(rcSegments, new object[] { Id.NetSegment });
-                tSceneExplorer.GetMethod("ExpandFromRefChain", flags, null, new Type[] { tReferenceChain }, null).Invoke(SceneExplorer, new object[] { rc });
-            }
-            tSceneExplorer.GetProperty("visible", BindingFlags.Public | BindingFlags.Instance).SetValue(SceneExplorer, true, null);
         }
     }
 }
