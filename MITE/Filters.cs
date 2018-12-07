@@ -241,6 +241,11 @@ namespace MITE
                         return false;
                     }
                 }
+
+                if (!MoveItTool.marqueeSelection)
+                {
+                    return true;
+                }
             }
 
             if (IsSurface(info)) {
