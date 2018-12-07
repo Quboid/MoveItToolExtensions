@@ -13,6 +13,8 @@ namespace MITE
     [HarmonyPatch("RaycastHoverInstance")]
     class MIT_RaycastHoverInstance
     {
+        static bool _stepProcessed = false;
+
         private static bool Prefix(Ray mouseRay, MoveItTool __instance, ref Instance ___m_hoverInstance)
         {
             Traverse _MIT = Traverse.Create(__instance);
@@ -45,7 +47,6 @@ namespace MITE
             bool selectSegments = true;
             bool selectTrees = true;
 
-            bool _stepProcessed = false;
             bool _repeatSearch = false;
 
             if (MoveItTool.marqueeSelection)
@@ -247,21 +248,16 @@ namespace MITE
                         }
                     }
                 }
+
                 _repeatSearch = false;
 
-                //MITE.Settings.keyStepOver.getEventKey()
-                //if (Event.current.type == EventType.KeyUp)
-                //{ 
-                //    Debug.Log($"{Event.current} - key:{MITE.Settings.keyStepOver.getEventKey()}");
-                //}
-
-                if (Event.current.Equals(Event.KeyboardEvent(MITE.Settings.keyStepOver.getEventKey())))
+                if (MITE.Settings.keyStepOver.isPressed())
                 {
                     if (!_stepProcessed)
                     {
-                        MITE.StepOver.Add(id);
                         _stepProcessed = true;
                         _repeatSearch = true;
+                        MITE.StepOver.Add(id);
                     }
                 }
                 else
@@ -271,7 +267,6 @@ namespace MITE
             }
             while (_repeatSearch);
 
-            //Debug.Log("SO Key:" + MITE.Settings.keyStepOver.getEventKey());
             //Debug.Log($"ID=({id.Building},{id.Prop},{id.NetNode},{id.NetSegment},{id.Tree})");
             if (UI.DbgPanel != null)
             {

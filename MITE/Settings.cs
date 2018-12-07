@@ -17,6 +17,7 @@ namespace MITE
         public bool Alt;
         public bool Shift;
 
+
         public SerializableShortcut() { }
 
         public SerializableShortcut(KeyCode k, bool c, bool s, bool a)
@@ -40,19 +41,81 @@ namespace MITE
                 this.Control = value.Control;
                 this.Shift = value.Shift;
                 this.Alt = value.Alt;
+                _keyPress = null;
             }
         }
 
-        public string getEventKey()
-        {
-            string str = "";
-
-            if (Control) str += "^";
-            if (Shift) str += "#";
-            if (Alt) str += "&";
-
-            return str + Key;
+        [XmlIgnore]
+        private Event _keyPress;
+        public Event KeyPress {
+            get {
+                if (_keyPress == null)
+                {
+                    string str = "";
+                    if (Control) str += "^";
+                    if (Shift) str += "#";
+                    if (Alt) str += "&";
+                    _keyPress = Event.KeyboardEvent(str + Key);
+                }
+                return _keyPress;
+            }
         }
+
+        public bool isPressed()
+        {
+            if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))
+            {
+                if (!Control) return false;
+            }
+            else
+            {
+                if (Control) return false;
+            }
+
+            if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
+            {
+                if (!Shift) return false;
+            }
+            else
+            {
+                if (Shift) return false;
+            }
+
+            if (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt))
+            {
+                if (!Alt) return false;
+            }
+            else
+            {
+                if (Alt) return false;
+            }
+
+            return Input.GetKey(Key);
+        }
+
+        //public bool CheckEvent(Event current)
+        //{
+        //    if (current.control != Control) return false;
+        //    if (current.shift != Shift) return false;
+        //    if (current.alt != Alt) return false;
+
+        //    char currentChar = current.character;
+        //    if (currentChar < 96) currentChar += (char)32;
+        //    Debug.Log($"ascii:{currentChar},{(char)Key}  -  Unity:{current.keyCode},{Key}");
+        //    if (currentChar == (char)Key) return true;
+        //    if (current.keyCode == Key) return true;
+        //    return false;
+        //}
+
+        //public string getEventKey()
+        //{
+        //    string msg = "";
+        //    if (Control) msg += "^";
+        //    if (Shift) msg += "#";
+        //    if (Alt) msg += "%";
+
+        //    return msg + Key;
+        //}
     }
 
     public class Settings
