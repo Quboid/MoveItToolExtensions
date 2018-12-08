@@ -113,25 +113,4 @@ namespace MITE
             }
         }
     }
-
-/*
-    public class GridBeGoneThreading : ThreadingExtensionBase
-    {
-        private bool _processed = false;
-        
-        public override void OnUpdate(float realTimeDelta, float simulationTimeDelta)
-        {
-            if ((Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) && Input.GetKey(KeyCode.N))
-            {
-                if (_processed) return;
-                _processed = true;
-
-                MITE.StepOver.Update();
-                }
-            else
-            {
-                _processed = false;
-            }
-        }
-    }*/
 }

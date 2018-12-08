@@ -92,30 +92,6 @@ namespace MITE
 
             return Input.GetKey(Key);
         }
-
-        //public bool CheckEvent(Event current)
-        //{
-        //    if (current.control != Control) return false;
-        //    if (current.shift != Shift) return false;
-        //    if (current.alt != Alt) return false;
-
-        //    char currentChar = current.character;
-        //    if (currentChar < 96) currentChar += (char)32;
-        //    Debug.Log($"ascii:{currentChar},{(char)Key}  -  Unity:{current.keyCode},{Key}");
-        //    if (currentChar == (char)Key) return true;
-        //    if (current.keyCode == Key) return true;
-        //    return false;
-        //}
-
-        //public string getEventKey()
-        //{
-        //    string msg = "";
-        //    if (Control) msg += "^";
-        //    if (Shift) msg += "#";
-        //    if (Alt) msg += "%";
-
-        //    return msg + Key;
-        //}
     }
 
     public class Settings
@@ -131,7 +107,6 @@ namespace MITE
         public bool PylonsAsNotBuildings = false;
         public bool AutoCollapseAlignTools = false;
         public SerializableShortcut keyStepOver = new SerializableShortcut(KeyCode.Tab, true, false, false);
-        //public SavedInputKey keyStepOver = new SavedInputKey("stepOver", SettingsClass.SettingsFileLocation, SavedInputKey.Encode(KeyCode.Tab, true, false, false), true);
         public bool ShowDebugPanel = false;
 
         public Settings() { }
