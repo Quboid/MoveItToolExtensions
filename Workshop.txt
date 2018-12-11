@@ -1,13 +1,11 @@
-[h1]MITE - Move It Tool Extensions[/h1]
-Adds features to the wonderful [url=https://steamcommunity.com/workshop/filedetails/?id=766190099]Move It![/url] mod including extra filters, alignment tools and more!
-
-As this is an extension, Move It is required and must be enabled. MITE can be safely disabled at any time.
+[h1][b] M I T E [/b] - Move It Tool Extensions[/h1]
+Adds experimental features to [url=https://steamcommunity.com/workshop/filedetails/?id=766190099]Move It![/url] mod - including extra filters, alignment tools and more! MITE can be safely disabled at any time and requires Move It to be enabled.
 
 [h1]Features[/h1]
 
-[b]Toggle all[/b] marquee selection filters on and off by double-clicking on the Marquee Selection button
+[b]Toggle all[/b] marquee selection filters on and off by double-clicking on the Marquee Selection button.
 
-[b]Step over[/b] selectable items - press Control+Tab to step over the item currently highlighted by the mouse to highlight the item below. When the mouse is moved, the stepped-over list is emptied. (Shortcut can be customised in MITE's options page.)
+[b]Step over[/b] items at current mouse position - press Control+Tab (key is configurable) to step over the item currently highlighted by the mouse to highlight the item below.
 
 [b]Pillars and Pylons[/b] can be hidden from selection, so they are just moved by moving the attached node. Hold Alt to select these buildings. (This option is off by default.)
 
@@ -21,7 +19,7 @@ As this is an extension, Move It is required and must be enabled. MITE can be sa
 [*][b]Tracks[/b] - train tracks, monorail tracks and MOM tracks
 [*][b]Paths[/b] - pedestrian paths, including Parklife pathways
 [*][b]Fences[/b] - fences, and quite a few Workshop assets that are based on them
-[*][b]Powerlines[/b] - take a wild guess...
+[*][b]Powerlines[/b] - ...
 [*][b]Others[/b] - quays, cable-cars, [url=https://steamcommunity.com/sharedfiles/filedetails/?id=1480409620]Ronyx69's Terraforming Network[/url], and anything else[/list]
 
 When the panel is closed, these filters are disabled (i.e. all network types will be selected). This improves marquee selection performance, so close the Network Filters panel if you want to select half the map.
@@ -29,21 +27,20 @@ When the panel is closed, these filters are disabled (i.e. all network types wil
 
 [h1]Align Tools[/h1]
 
-Quickly rotate buildings, props, decals and surfaces. Works like Move It's height align; select the item or items you want to rotate and choose a tool from the Align Tools menu. Click on a building, prop, decal, surface or road segment to rotate the item(s) to point the same direction.
+Quickly rotate buildings, props, decals and surfaces. Works like Move It's height align; select the item or items you want to rotate and choose a tool from the Align Tools menu. Click on a building, prop, decal, surface or road segment to rotate the item(s) to point the same direction. MITE replaces [url=https://steamcommunity.com/sharedfiles/filedetails/?id=1569957736]Align Rotation[/url].
 [list][*][b]Align Height[/b] - Move It's height alignment tool, accessible by Move It's shortcut key (default: Control+H).
 [*][b]Align In-Place[/b] - Rotate all valid selected items to face the same direction as the chosen item, without moving the selected items.
 [*][b]Align As Group[/b] - Rotate and move all valid selected items around a central point. Useful when the selected items face the same direction, but unreliable when they do not.
 [*][b]Align Randomly[/b] - Immediately rotates valid selected items to a random angle.[/list]
 
 [b]Notes[/b]
-[list][*] Works with undo and redo, but any random rotation will be different on each redo
-[*] Does not align trees, segments or nodes
-[*] Buildings, props, decals and surfaces can be aligned to a network segment (road, rail, power line, etc)
-[*] Works with everything the game considers a buildings, including not-actually-buildings like [url=https://steamcommunity.com/sharedfiles/filedetails/?id=1285201733]Badi Dea's Parking Lot Roads[/url] spaces (see tutorial picture)
-[*] Items aligned to road segments are usually 180 degrees out, because of [url=https://en.wikiquote.org/wiki/Murphy%27s_law]Murphy's Law[/url]
-[*] Quickly and neatly rotate items which are 90 or 180 degrees out with Move It's 45 degree rotation tool[/list]
-
-MITE replaces [url=https://steamcommunity.com/sharedfiles/filedetails/?id=1569957736]Align Rotation for Move It[/url], please unsubscribe from Align Rotation. If you want to re-create the keyboard shortcuts, use [url=https://steamcommunity.com/sharedfiles/filedetails/?id=685719710]More Shortcuts[/url].
+[list][*]Works with undo and redo, but any random rotation will be different on each redo
+[*]Does not align trees, segments or nodes
+[*]Buildings, props, decals and surfaces can be aligned to a network segment (road, rail, power line, etc)
+[*]Works with everything the game considers a buildings, including not-actually-buildings like [url=https://steamcommunity.com/sharedfiles/filedetails/?id=1285201733]Badi Dea's Parking Lot Roads[/url] spaces (see tutorial picture)
+[*]Items aligned to road segments are usually 180 degrees out, because of [url=https://en.wikiquote.org/wiki/Murphy%27s_law]Murphy's Law[/url]
+[*]Neatly rotate items which are 90 or 180 degrees out with Move It's 45 degree rotation tool
+[*]Use [url=https://steamcommunity.com/sharedfiles/filedetails/?id=685719710]More Shortcuts[/url] to create keyboard shortcuts to any align tool[/list]
 
 
 [h1]Also[/h1]
@@ -54,7 +51,8 @@ Source code: [i]Coming to GitHub soon[/i]
 
 [b]Credits[/b]
 Thank you for testing and suggestions to [url=https://steamcommunity.com/id/deeheks/myworkshopfiles/?appid=255710]deeheks[/url], [url=https://www.twitch.tv/leaderofthemonkeys]leaderofthemonkeys[/url], Nothing, [url=https://steamcommunity.com/id/Iamawolfgetoverit/myworkshopfiles/?appid=255710]
-Blackwolf (Frdm920)[/url], [url=https://steamcommunity.com/id/AJRmayor/myworkshopfiles/?appid=255710]Arnold J. Rimmer[/url], [url=https://www.youtube.com/channel/UCs9CyEymirZzc_3FKW_Sx9g]Strictoaster[/url]; and thanks to [url=https://steamcommunity.com/id/boformer/myworkshopfiles?appid=255710]Boformer[/url] and [url=https://steamcommunity.com/id/simon56modder/myworkshopfiles/?appid=255710]Simon Ryr[/url] for technical help. Special thank you to [url=https://steamcommunity.com/id/samsamts/myworkshopfiles/?appid=255710]SamSamTS[/url] for Move It! and several other indispensable mods.
+Blackwolf (Frdm920)[/url], [url=https://steamcommunity.com/profiles/76561198185225815/myworkshopfiles/?appid=255710]
+Sparks[/url], [url=https://steamcommunity.com/id/AJRmayor/myworkshopfiles/?appid=255710]Arnold J. Rimmer[/url], [url=https://www.youtube.com/channel/UCs9CyEymirZzc_3FKW_Sx9g]Strictoaster[/url]; and thanks to [url=https://steamcommunity.com/id/boformer/myworkshopfiles?appid=255710]Boformer[/url] and [url=https://steamcommunity.com/id/simon56modder/myworkshopfiles/?appid=255710]Simon Ryr[/url] for technical help. Special thank you to [url=https://steamcommunity.com/id/samsamts/myworkshopfiles/?appid=255710]SamSamTS[/url] for Move It! and several other indispensable mods.
 
 [b]Donations[/b]
 If you like this mod and wish to donate, please go to the [url=https://steamcommunity.com/workshop/filedetails/?id=766190099]Move It![/url] page and use the donation link there.

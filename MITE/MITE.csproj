@@ -46,9 +46,9 @@
     <Reference Include="ICities">
       <HintPath>C:\Games\Steam\steamapps\common\Cities_Skylines\Cities_Data\Managed\ICities.dll</HintPath>
     </Reference>
-    <Reference Include="MoveIt, Version=1.0.6911.42921, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MoveIt, Version=1.0.6812.29872, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Users\Rob\AppData\Local\Colossal Order\Cities_Skylines\Addons\Mods\Move It 220 766190099\MoveIt.dll</HintPath>
+      <HintPath>C:\Users\Rob\AppData\Local\Colossal Order\Cities_Skylines\Addons\Mods - Deactivated\Move It 220 766190099\MoveIt.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
